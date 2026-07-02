@@ -2,7 +2,7 @@ package com.unoeste.fallpreventionbe.entities;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "paciente")
@@ -17,13 +17,13 @@ public class Paciente
     @Column(name = "pac_email")
     private String email;
     @Column(name = "pac_data_nascimento")
-    private LocalDateTime data_nascimento;
+    private LocalDate data_nascimento;
     @Column(name = "pac_telefone")
     private String telefone;
     @Column(name = "pac_cpf")
     private String cpf;
 
-    public Paciente(Long id, String nome, String email, LocalDateTime data_nascimento, String telefone, String cpf) {
+    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -61,11 +61,11 @@ public class Paciente
         this.email = email;
     }
 
-    public LocalDateTime getData_nascimento() {
+    public LocalDate getData_nascimento() {
         return data_nascimento;
     }
 
-    public void setData_nascimento(LocalDateTime data_nascimento) {
+    public void setData_nascimento(LocalDate data_nascimento) {
         this.data_nascimento = data_nascimento;
     }
 

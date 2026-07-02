@@ -8,6 +8,7 @@ public class Exercicio
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "exe_id")
     private Long id;
     @Column(name = "exe_nome")
     private String nome;
@@ -16,19 +17,17 @@ public class Exercicio
     private TipoExercicio tipoExercicio;
     @Column(name = "exe_codigo_nome") // referencia dos códigos da unity
     private String codigo_nome;
-    @Column(name = "exe_codigo_audio") // referencia dos aúdios
-    private String codigo_audio;
 
-    public Exercicio(Long id, String nome, TipoExercicio tipoExercicio, String codigo_nome, String codigo_audio) {
+
+    public Exercicio(Long id, String nome, TipoExercicio tipoExercicio, String codigo_nome) {
         this.id = id;
         this.nome = nome;
         this.tipoExercicio = tipoExercicio;
         this.codigo_nome = codigo_nome;
-        this.codigo_audio = codigo_audio;
     }
 
     public Exercicio() {
-        this(0L, "", null, "", "");
+        this(0L, "", null, "");
     }
 
     public Long getId() {
@@ -61,13 +60,5 @@ public class Exercicio
 
     public void setCodigo_nome(String codigo_nome) {
         this.codigo_nome = codigo_nome;
-    }
-
-    public String getCodigo_audio() {
-        return codigo_audio;
-    }
-
-    public void setCodigo_audio(String codigo_audio) {
-        this.codigo_audio = codigo_audio;
     }
 }

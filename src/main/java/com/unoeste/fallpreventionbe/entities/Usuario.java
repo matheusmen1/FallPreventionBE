@@ -21,18 +21,18 @@ public class Usuario
     @Column(name = "usr_telefone")
     private String telefone;
     @Column(name = "usr_ra")
-    private int ra;
+    private String ra;
     @Column(name = "usr_nivel")
-    private int nivel; // 1 - fisio 0 - monitor
+    private Integer nivel; // 1 - fisio 0 - monitor
     @ManyToOne
-    @JoinColumn(name = "usr_id")
+    @JoinColumn(name = "usr_responsavel_id")
     private Usuario responsavel;
     public Usuario()
     {
-        this(0L, "", "", "", "", "", 0 , 0, null);
+        this(0L, "", "", "", "", "", "" , 0, null);
     }
 
-    public Usuario(Long id, String login, String nome, String senha, String email, String telefone, int ra, int nivel, Usuario responsavel) {
+    public Usuario(Long id, String login, String nome, String senha, String email, String telefone, String ra, Integer nivel, Usuario responsavel) {
         this.id = id;
         this.login = login;
         this.nome = nome;
@@ -100,19 +100,19 @@ public class Usuario
         this.telefone = telefone;
     }
 
-    public int getRa() {
+    public String getRa() {
         return ra;
     }
 
-    public void setRa(int ra) {
+    public void setRa(String ra) {
         this.ra = ra;
     }
 
-    public int getNivel() {
+    public Integer getNivel() {
         return nivel;
     }
 
-    public void setNivel(int nivel) {
+    public void setNivel(Integer nivel) {
         this.nivel = nivel;
     }
 }

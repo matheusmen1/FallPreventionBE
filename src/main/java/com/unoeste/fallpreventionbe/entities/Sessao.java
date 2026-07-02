@@ -25,6 +25,8 @@ public class Sessao
     private String status; // concluida, pendente, cancelada
     @OneToMany (mappedBy = "sessao")
     private List<AprovacaoSessao> aprovacaoSessaos;
+    @OneToMany (mappedBy = "sessao")
+    private List<SessaoFase> sessaoFases;
 
     public Sessao(Long id, LocalDateTime data_hora, Usuario responsavel, Paciente paciente, String status) {
         this.id = id;
@@ -85,5 +87,13 @@ public class Sessao
 
     public void setAprovacaoSessaos(List<AprovacaoSessao> aprovacaoSessaos) {
         this.aprovacaoSessaos = aprovacaoSessaos;
+    }
+
+    public List<SessaoFase> getSessaoFases() {
+        return sessaoFases;
+    }
+
+    public void setSessaoFases(List<SessaoFase> sessaoFases) {
+        this.sessaoFases = sessaoFases;
     }
 }

@@ -3,6 +3,7 @@ package com.unoeste.fallpreventionbe.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "pre_avaliacao")
@@ -20,6 +21,9 @@ public class PreAvaliacao
     @ManyToOne
     @JoinColumn(name = "pac_id")
     private Paciente paciente;
+
+    @OneToMany(mappedBy = "pre_avaliacao")
+    private List<Metrica> metricas;
 
     public PreAvaliacao()
     {
@@ -63,5 +67,13 @@ public class PreAvaliacao
 
     public void setPaciente(Paciente paciente) {
         this.paciente = paciente;
+    }
+
+    public List<Metrica> getMetricas() {
+        return metricas;
+    }
+
+    public void setMetricas(List<Metrica> metricas) {
+        this.metricas = metricas;
     }
 }

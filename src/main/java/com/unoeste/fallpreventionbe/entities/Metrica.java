@@ -12,7 +12,7 @@ public class Metrica
     private Long id;
     @ManyToOne
     @JoinColumn(name = "pre_id")
-    private PreAvaliacao preAvaliacao;
+    private PreAvaliacao pre_avaliacao;
     @Column(name = "met_nome_teste")
     private String nome_teste;
     @Column(name = "met_pontuacao")
@@ -23,9 +23,9 @@ public class Metrica
         this(0L, null, "", 0);
     }
 
-    public Metrica(Long id, PreAvaliacao preAvaliacao, String nome_teste, double pontuacao) {
+    public Metrica(Long id, PreAvaliacao pre_avaliacao, String nome_teste, double pontuacao) {
         this.id = id;
-        this.preAvaliacao = preAvaliacao;
+        this.pre_avaliacao = pre_avaliacao;
         this.nome_teste = nome_teste;
         this.pontuacao = pontuacao;
     }
@@ -39,11 +39,11 @@ public class Metrica
     }
 
     public PreAvaliacao getPreAvaliacao() {
-        return preAvaliacao;
+        return pre_avaliacao;
     }
 
-    public void setPreAvaliacao(PreAvaliacao preAvaliacao) {
-        this.preAvaliacao = preAvaliacao;
+    public void setPreAvaliacao(PreAvaliacao pre_avaliacao) {
+        this.pre_avaliacao = pre_avaliacao;
     }
 
     public String getNome_teste() {

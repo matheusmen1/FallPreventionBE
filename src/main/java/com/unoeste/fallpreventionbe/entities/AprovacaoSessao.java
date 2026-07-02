@@ -15,8 +15,8 @@ public class AprovacaoSessao
     private Long id;
     @Column(name = "apr_data_hora")
     private LocalDateTime data_hora;
-    @Column(name = "apr_observacao")
-    private String observacao; // justificar motivo de recusamento
+    @Column(name = "apr_motivo")
+    private String motivo; // justificar motivo de recusamento
     @Column(name = "apr_status")
     private String status; // aprovada, recusada
 
@@ -28,10 +28,10 @@ public class AprovacaoSessao
     @JoinColumn(name = "usr_id")
     private Usuario fisioterapeuta;
 
-    public AprovacaoSessao(Long id, LocalDateTime data_hora, String observacao, String status, Sessao sessao, Usuario fisioterapeuta) {
+    public AprovacaoSessao(Long id, LocalDateTime data_hora, String motivo, String status, Sessao sessao, Usuario fisioterapeuta) {
         this.id = id;
         this.data_hora = data_hora;
-        this.observacao = observacao;
+        this.motivo = motivo;
         this.status = status;
         this.sessao = sessao;
         this.fisioterapeuta = fisioterapeuta;
@@ -58,12 +58,12 @@ public class AprovacaoSessao
         this.data_hora = data_hora;
     }
 
-    public String getObservacao() {
-        return observacao;
+    public String getMotivo() {
+        return motivo;
     }
 
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
+    public void setMotivo(String observacao) {
+        this.motivo = observacao;
     }
 
     public String getStatus() {
