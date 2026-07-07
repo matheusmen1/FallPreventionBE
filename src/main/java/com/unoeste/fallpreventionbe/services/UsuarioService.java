@@ -25,7 +25,7 @@ public class UsuarioService
         {
             if (usuario.getId() == null)
             {
-                Usuario aux = usuarioRepository.getUsuarioByLogin(usuario.getLogin());
+                Usuario aux = usuarioRepository.getUsuarioByEmailOrCpf(usuario.getEmail(), usuario.getCpf());
                 if (aux != null)
                     return null;
             }
@@ -81,11 +81,11 @@ public class UsuarioService
         }
     }
 
-    public Usuario logar(String login, String senha)
+    public Usuario logar(String email, String senha)
     {
         try
         {
-            Usuario usuario = usuarioRepository.getUsuarioByLogin(login);
+            Usuario usuario = usuarioRepository.getUsuarioByEmailOrCpf(email, "");
             if (usuario != null && usuario.getSenha().equals(senha))
                 return usuario;
             else
@@ -95,5 +95,10 @@ public class UsuarioService
         {
             return null;
         }
+    }
+
+    public List<Usuario> getMonitoresByResponsavel(Long id)
+    {
+        return usuarioRepository.getMonitoresByResponsavel(id);
     }
 }

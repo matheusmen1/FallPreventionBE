@@ -4,7 +4,6 @@ import com.unoeste.fallpreventionbe.entities.Erro;
 import com.unoeste.fallpreventionbe.entities.Usuario;
 import com.unoeste.fallpreventionbe.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +36,15 @@ public class UsuarioRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Usuario Nao Encontrado"));
     }
+    @GetMapping("/getMonitoresByResponsavel/{idResponsavel}")
+    public ResponseEntity<Object> getMonitoresByResponsavel(@PathVariable("idResponsavel") Long id)
+    {
+        List<Usuario> usuarios = usuarioService.getMonitoresByResponsavel(id);
+        if (usuarios.size() > 0)
+            return ResponseEntity.ok().body(usuarios);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhum Monitor Encontrado"));
+    }
     @PostMapping
     public ResponseEntity<Object> addUsuario(@RequestBody Usuario usuario)
     {
@@ -47,13 +55,13 @@ public class UsuarioRestControllers
             return ResponseEntity.badRequest().body(new Erro("Erro ao Cadastrar Novo Usuário"));
     }
     @PostMapping("/logar")
-    public ResponseEntity<Object> logar(@RequestParam String login, @RequestParam String senha)
+    public ResponseEntity<Object> logar(@RequestParam String email, @RequestParam String senha)
     {
-        Usuario usuario = usuarioService.logar(login, senha);
+        Usuario usuario = usuarioService.logar(email, senha);
         if (usuario != null)
             return ResponseEntity.ok().body(usuario);
         else
-            return ResponseEntity.badRequest().body(new Erro("Login E/Ou Senha Incorreto(s)"));
+            return ResponseEntity.badRequest().body(new Erro("Email E/Ou Senha Incorreto(s)"));
     }
     @PutMapping
     public ResponseEntity<Object> updateUsuario(@RequestBody Usuario usuario)
