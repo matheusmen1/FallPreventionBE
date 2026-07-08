@@ -1,5 +1,7 @@
 package com.unoeste.fallpreventionbe.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,6 +12,8 @@ public class Metrica
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "met_id")
     private Long id;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "pre_id")
     private PreAvaliacao pre_avaliacao;
@@ -37,7 +41,7 @@ public class Metrica
     public void setId(Long id) {
         this.id = id;
     }
-
+    @JsonIgnore
     public PreAvaliacao getPreAvaliacao() {
         return pre_avaliacao;
     }
