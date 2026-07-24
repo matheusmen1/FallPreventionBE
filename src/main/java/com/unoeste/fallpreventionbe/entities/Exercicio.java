@@ -14,15 +14,15 @@ public class Exercicio
     private String nome;
     @ManyToOne
     @JoinColumn(name = "tpe_id")
-    private TipoExercicio tipoExercicio;
+    private TipoExercicio tipo_exercicio;
     @Column(name = "exe_codigo_nome") // referencia dos códigos da unity
     private String codigo_nome;
 
 
-    public Exercicio(Long id, String nome, TipoExercicio tipoExercicio, String codigo_nome) {
+    public Exercicio(Long id, String nome, TipoExercicio tipo_exercicio, String codigo_nome) {
         this.id = id;
         this.nome = nome;
-        this.tipoExercicio = tipoExercicio;
+        this.tipo_exercicio = tipo_exercicio;
         this.codigo_nome = codigo_nome;
     }
 
@@ -47,11 +47,11 @@ public class Exercicio
     }
 
     public TipoExercicio getTipoExercicio() {
-        return tipoExercicio;
+        return tipo_exercicio;
     }
 
     public void setTipoExercicio(TipoExercicio tipoExercicio) {
-        this.tipoExercicio = tipoExercicio;
+        this.tipo_exercicio = tipoExercicio;
     }
 
     public String getCodigo_nome() {
