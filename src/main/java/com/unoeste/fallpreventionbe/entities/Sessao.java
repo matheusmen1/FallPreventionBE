@@ -23,9 +23,14 @@ public class Sessao
     private Paciente paciente;
     @Column(name = "ses_status")
     private String status; // concluida, pendente, cancelada
-    @OneToMany (mappedBy = "sessao")
-    private List<AprovacaoSessao> aprovacaoSessaos;
-    @OneToMany (mappedBy = "sessao")
+
+    @OneToOne(mappedBy = "sessao") // cascade = CascadeType.ALL
+    private AprovacaoSessao aprovacaoSessao;
+
+    @OneToOne(mappedBy = "sessao") // cascade = CascadeType.ALL
+    private ResultadoSessao resultadoSessao;
+
+    @OneToMany (mappedBy = "sessao") // cascade = CascadeType.ALL
     private List<SessaoFase> sessaoFases;
 
     public Sessao(Long id, LocalDateTime data_hora, Usuario responsavel, Paciente paciente, String status) {
@@ -81,12 +86,20 @@ public class Sessao
         this.status = status;
     }
 
-    public List<AprovacaoSessao> getAprovacaoSessaos() {
-        return aprovacaoSessaos;
+    public AprovacaoSessao getAprovacaoSessao() {
+        return aprovacaoSessao;
     }
 
-    public void setAprovacaoSessaos(List<AprovacaoSessao> aprovacaoSessaos) {
-        this.aprovacaoSessaos = aprovacaoSessaos;
+    public void setAprovacaoSessao(AprovacaoSessao aprovacaoSessao) {
+        this.aprovacaoSessao = aprovacaoSessao;
+    }
+
+    public ResultadoSessao getResultadoSessao() {
+        return resultadoSessao;
+    }
+
+    public void setResultadoSessao(ResultadoSessao resultadoSessao) {
+        this.resultadoSessao = resultadoSessao;
     }
 
     public List<SessaoFase> getSessaoFases() {

@@ -1,5 +1,6 @@
 package com.unoeste.fallpreventionbe.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,9 +11,12 @@ public class ResultadoSessao
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "res_id")
     private Long id;
+
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "ses_id")
     private Sessao sessao;
+
     @Column(name = "res_duracao")
     private int duracao;
     @Column(name = "res_observacao")

@@ -1,5 +1,6 @@
 package com.unoeste.fallpreventionbe.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,8 @@ public class AprovacaoSessao
     @Column(name = "apr_status")
     private String status; // aprovada, recusada
 
-    @ManyToOne
+    @JsonIgnore
+    @OneToOne
     @JoinColumn(name = "ses_id")
     private Sessao sessao;
 

@@ -1,5 +1,6 @@
 package com.unoeste.fallpreventionbe.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,6 +11,7 @@ public class SessaoFase
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sesf_id")
     private Long id;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "ses_id")
     private Sessao sessao;
@@ -17,9 +19,9 @@ public class SessaoFase
     @JoinColumn(name = "exe_id")
     private Exercicio exercicio;
     @Column(name = "sesf_ordem")
-    private int ordem;
+    private Integer ordem;
 
-    public SessaoFase(Long id, Sessao sessao, Exercicio exercicio, int ordem) {
+    public SessaoFase(Long id, Sessao sessao, Exercicio exercicio, Integer ordem) {
         this.id = id;
         this.sessao = sessao;
         this.exercicio = exercicio;
@@ -55,11 +57,11 @@ public class SessaoFase
         this.exercicio = exercicio;
     }
 
-    public int getOrdem() {
+    public Integer getOrdem() {
         return ordem;
     }
 
-    public void setOrdem(int ordem) {
+    public void setOrdem(Integer ordem) {
         this.ordem = ordem;
     }
 }
