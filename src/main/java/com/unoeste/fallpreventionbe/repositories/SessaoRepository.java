@@ -40,5 +40,11 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
     @Query(value = "UPDATE aprovacao_sessao SET apr_data_hora = :dataHora,  apr_motivo = :motivo, apr_status = :status, usr_id = :idFisio WHERE ses_id = :idSessao", nativeQuery = true)
     public void updateAprovacaoSessao(@Param("dataHora") LocalDateTime dataHora,@Param("idFisio") Long idFisio,@Param("status") String status, @Param("motivo") String motivo,@Param("idSessao") Long idSessao);
 
+    @Query(value = "SELECT exe_codigo_nome FROM exercicio INNER JOIN sessao_fase ON exercicio.exe_id = sessao_fase.exe_id AND sessao_fase.ses_id = :id ORDER BY exe_codigo_nome DESC", nativeQuery = true)
+    public List<String> getCodigoUnity(@Param("id") Long id);
 
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO resultado_sessao (res_duracao, res_observacao, ses_id) VALUES (:duracao, :observacao, :id)", nativeQuery = true)
+    public void addResultadoSessao(Integer duracao, String observacao, Long id);
 }

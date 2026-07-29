@@ -18,11 +18,11 @@ public class ResultadoSessao
     private Sessao sessao;
 
     @Column(name = "res_duracao")
-    private int duracao;
+    private Integer duracao;
     @Column(name = "res_observacao")
     private String observacao;
 
-    public ResultadoSessao(Long id, Sessao sessao, int duracao, String observacao) {
+    public ResultadoSessao(Long id, Sessao sessao, Integer duracao, String observacao) {
         this.id = id;
         this.sessao = sessao;
         this.duracao = duracao;
@@ -50,11 +50,11 @@ public class ResultadoSessao
         this.sessao = sessao;
     }
 
-    public int getDuracao() {
+    public Integer getDuracao() {
         return duracao;
     }
 
-    public void setDuracao(int duracao) {
+    public void setDuracao(Integer duracao) {
         this.duracao = duracao;
     }
 

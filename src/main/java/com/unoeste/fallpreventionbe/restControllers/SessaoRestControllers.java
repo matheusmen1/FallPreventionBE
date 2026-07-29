@@ -2,6 +2,7 @@ package com.unoeste.fallpreventionbe.restControllers;
 
 import com.unoeste.fallpreventionbe.entities.AprovacaoSessao;
 import com.unoeste.fallpreventionbe.entities.Erro;
+import com.unoeste.fallpreventionbe.entities.ResultadoSessao;
 import com.unoeste.fallpreventionbe.entities.Sessao;
 import com.unoeste.fallpreventionbe.services.SessaoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,16 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
     }
+    @GetMapping("/play/{id}")
+    public ResponseEntity<Object> getCodigosUnity(@PathVariable("id") Long id)
+    {
+        List<String> codigos = sessaoService.getCodigosUnity(id);
+        if (codigos.size() > 0)
+            return ResponseEntity.ok().body(codigos);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhum Código Encontrado"));
+    }
+
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody Sessao sessao)
     {
@@ -53,6 +64,15 @@ public class SessaoRestControllers
             return ResponseEntity.ok().body(novaSessao);
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Gravar Sessão"));
+    }
+    @PostMapping("/resultado/{id}")
+    public ResponseEntity<Object> addResultadoSessao(@RequestBody ResultadoSessao resultadoSessao, @PathVariable("id") Long id)
+    {
+        ResultadoSessao novoResultadoSessao = sessaoService.addResultadoSessao(resultadoSessao, id);
+        if (novoResultadoSessao != null)
+            return ResponseEntity.ok().body(novoResultadoSessao);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Gravar Resultado Sessão"));
     }
     @PutMapping
     public ResponseEntity<Object> update(@RequestBody Sessao sessao)

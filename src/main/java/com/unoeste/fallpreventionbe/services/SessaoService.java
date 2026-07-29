@@ -99,4 +99,27 @@ public class SessaoService
 
     }
 
+    public List<String> getCodigosUnity(Long id)
+    {
+        return sessaoRepository.getCodigoUnity(id);
+
+    }
+
+    public ResultadoSessao addResultadoSessao(ResultadoSessao resultadoSessao, Long id)
+    {
+        try{
+            Sessao sessao = sessaoRepository.findById(id).orElse(null);
+            if (sessao != null)
+            {
+                sessao.setStatus("CONCLUIDA");
+                sessaoRepository.save(sessao);
+                sessaoRepository.addResultadoSessao(resultadoSessao.getDuracao(), resultadoSessao.getObservacao(), sessao.getId());
+                return resultadoSessao;
+            }
+            return null;
+        }catch (Exception e)
+        {
+            return null;
+        }
+    }
 }
