@@ -101,4 +101,9 @@ public class UsuarioService
     {
         return usuarioRepository.getMonitoresByResponsavel(id);
     }
+
+    public List<Usuario> getAllFisioterapeutas()
+    {
+        return usuarioRepository.getAllFisioterapeutas();
+    }
 }

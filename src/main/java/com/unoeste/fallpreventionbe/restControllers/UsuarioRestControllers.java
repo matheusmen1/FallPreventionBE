@@ -36,6 +36,15 @@ public class UsuarioRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Usuario Nao Encontrado"));
     }
+    @GetMapping("/getAllFisioterapeutas")
+    public ResponseEntity<Object> getAllFisioterapeutas()
+    {
+        List<Usuario> usuarios = usuarioService.getAllFisioterapeutas();
+        if (usuarios.size() > 0)
+            return ResponseEntity.ok().body(usuarios);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhum Fisioterapeuta Encontrado"));
+    }
     @GetMapping("/getMonitoresByResponsavel/{idResponsavel}")
     public ResponseEntity<Object> getMonitoresByResponsavel(@PathVariable("idResponsavel") Long id)
     {
