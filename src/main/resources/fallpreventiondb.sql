@@ -24,15 +24,15 @@ pac_cpf VARCHAR(100) NOT NULL
 
 );
 
-CREATE TABLE IF NOT EXISTS pre_avaliacao(
+CREATE TABLE IF NOT EXISTS ficha_avaliacao(
 pre_id BIGSERIAL PRIMARY KEY,
 pre_data_avaliacao TIMESTAMP NOT NULL,
 usr_id BIGINT NOT NULL,
 pac_id BIGINT NOT NULL,
-CONSTRAINT fk_usuario_pre_avaliacao
+CONSTRAINT fk_usuario_ficha_avaliacao
 	FOREIGN KEY (usr_id)
 		REFERENCES usuario (usr_id),
-CONSTRAINT fk_paciente_pre_avaliacao
+CONSTRAINT fk_paciente_ficha_avaliacao
 	FOREIGN KEY (pac_id)
 		REFERENCES paciente (pac_id)
 );
@@ -44,7 +44,7 @@ met_pontuacao INTEGER NOT NULL,
 pre_id BIGINT NOT NULL,
 CONSTRAINT fk_paciente_metrica
 	FOREIGN KEY (pre_id)
-		REFERENCES pre_avaliacao (pre_id)
+		REFERENCES ficha_avaliacao (pre_id)
 
 );
 CREATE TABLE IF NOT EXISTS tipo_exercicio(

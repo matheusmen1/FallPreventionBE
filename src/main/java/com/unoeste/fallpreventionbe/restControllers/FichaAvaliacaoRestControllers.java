@@ -1,8 +1,8 @@
 package com.unoeste.fallpreventionbe.restControllers;
 
 import com.unoeste.fallpreventionbe.entities.Erro;
-import com.unoeste.fallpreventionbe.entities.PreAvaliacao;
-import com.unoeste.fallpreventionbe.services.PreAvaliacaoService;
+import com.unoeste.fallpreventionbe.entities.FichaAvaliacao;
+import com.unoeste.fallpreventionbe.services.FichaAvaliacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,15 +11,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("apis/pre-avaliacao")
-public class PreAvaliacaoRestControllers
+public class FichaAvaliacaoRestControllers
 {
     @Autowired
-    private PreAvaliacaoService preAvaliacaoService;
+    private FichaAvaliacaoService fichaAvaliacaoService;
 
     @GetMapping
     public ResponseEntity<Object> getAll()
     {
-        List<PreAvaliacao> preAvaliacaoList = preAvaliacaoService.getAll();
+        List<FichaAvaliacao> preAvaliacaoList = fichaAvaliacaoService.getAll();
         if (preAvaliacaoList.size() > 0)
             return ResponseEntity.ok().body(preAvaliacaoList);
         else
@@ -28,7 +28,7 @@ public class PreAvaliacaoRestControllers
     @GetMapping("getAllByPaciente/{idPaciente}")
     public ResponseEntity<Object> getAllbyPaciente(@PathVariable("id") Long id)
     {
-        List<PreAvaliacao> preAvaliacaoList = preAvaliacaoService.getAllByPaciente(id);
+        List<FichaAvaliacao> preAvaliacaoList = fichaAvaliacaoService.getAllByPaciente(id);
         if (preAvaliacaoList.size() > 0)
             return ResponseEntity.ok().body(preAvaliacaoList);
         else
@@ -38,7 +38,7 @@ public class PreAvaliacaoRestControllers
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable("id") Long id)
     {
-        PreAvaliacao preAvaliacao = preAvaliacaoService.getById(id);
+        FichaAvaliacao preAvaliacao = fichaAvaliacaoService.getById(id);
         if (preAvaliacao != null)
             return ResponseEntity.ok().body(preAvaliacao);
         else
@@ -46,9 +46,9 @@ public class PreAvaliacaoRestControllers
 
     }
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody PreAvaliacao preAvaliacao)
+    public ResponseEntity<Object> add(@RequestBody FichaAvaliacao preAvaliacao)
     {
-        PreAvaliacao novaPreAvaliacao = preAvaliacaoService.save(preAvaliacao);
+        FichaAvaliacao novaPreAvaliacao = fichaAvaliacaoService.save(preAvaliacao);
         if (novaPreAvaliacao != null)
             return ResponseEntity.ok().body(novaPreAvaliacao);
         else
@@ -57,7 +57,7 @@ public class PreAvaliacaoRestControllers
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") Long id)
     {
-        if (preAvaliacaoService.delete(id))
+        if (fichaAvaliacaoService.delete(id))
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Apagar Pré-Avaliação"));

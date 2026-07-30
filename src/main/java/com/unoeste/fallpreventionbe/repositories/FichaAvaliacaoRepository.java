@@ -1,6 +1,6 @@
 package com.unoeste.fallpreventionbe.repositories;
 
-import com.unoeste.fallpreventionbe.entities.PreAvaliacao;
+import com.unoeste.fallpreventionbe.entities.FichaAvaliacao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Repository
-public interface PreAvaliacaoRepository extends JpaRepository<PreAvaliacao, Long>
+public interface FichaAvaliacaoRepository extends JpaRepository<FichaAvaliacao, Long>
 {
-    @Query(value = "SELECT * FROM pre_avaliacao WHERE pac_id = :id", nativeQuery = true)
-    public List<PreAvaliacao> getAllByPaciente(@RequestParam("id") Long id);
+    @Query(value = "SELECT * FROM ficha_avaliacao WHERE pac_id = :id", nativeQuery = true)
+    public List<FichaAvaliacao> getAllByPaciente(@RequestParam("id") Long id);
 
     @Modifying
     @Transactional

@@ -66,7 +66,7 @@ public class PacienteService
         }
     }
 
-    public Paciente getByNome(String nome)
+    public List<Paciente> getByNome(String nome)
     {
         String novoNome =  nome + '%';
         return pacienteRepository.getByNome(novoNome);

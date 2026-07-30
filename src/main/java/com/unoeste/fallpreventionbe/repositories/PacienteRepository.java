@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     @Query(value = "SELECT * FROM paciente WHERE pac_cpf = :cpf OR pac_email = :email", nativeQuery = true)
@@ -15,5 +17,5 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     public Paciente getByEmail(@Param("cpf") String cpf);
 
     @Query(value = "SELECT * FROM paciente WHERE pac_nome ILIKE :nome", nativeQuery = true)
-    public Paciente getByNome(@Param("nome") String nome);
+    public List<Paciente> getByNome(@Param("nome") String nome);
 }

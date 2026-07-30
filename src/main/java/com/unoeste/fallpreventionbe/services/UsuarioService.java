@@ -29,6 +29,19 @@ public class UsuarioService
                 if (aux != null)
                     return null;
             }
+            else
+            {
+                Usuario aux = usuarioRepository.findById(usuario.getId()).orElse(null);
+                if (aux != null)
+                {
+                    if (aux.getNivel() > 0 && usuario.getNivel() < 0)
+                    {
+                        List<Usuario> monitores = usuarioRepository.getMonitoresByResponsavel(aux.getId());
+                        if (monitores.size() > 0)
+                            return null;
+                    }
+                }
+            }
             if (usuario.getNivel() < 1)
             {
                 if (usuario.getResponsavel() == null)
@@ -40,6 +53,7 @@ public class UsuarioService
                         return null;
                 }
             }
+
             return usuarioRepository.save(usuario);
 
         }catch (Exception e)

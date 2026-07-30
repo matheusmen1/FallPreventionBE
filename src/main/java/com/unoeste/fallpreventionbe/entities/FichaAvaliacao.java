@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "pre_avaliacao")
-public class PreAvaliacao
+@Table(name = "ficha_avaliacao")
+public class FichaAvaliacao
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,15 +22,15 @@ public class PreAvaliacao
     @JoinColumn(name = "pac_id")
     private Paciente paciente;
 
-    @OneToMany(mappedBy = "pre_avaliacao")
+    @OneToMany(mappedBy = "ficha_avaliacao")
     private List<Metrica> metricas;
 
-    public PreAvaliacao()
+    public FichaAvaliacao()
     {
         this(0L, null, null, null);
     }
 
-    public PreAvaliacao(Long id, LocalDateTime data_avaliacao, Usuario usuario, Paciente paciente) {
+    public FichaAvaliacao(Long id, LocalDateTime data_avaliacao, Usuario usuario, Paciente paciente) {
         this.id = id;
         this.data_avaliacao = data_avaliacao;
         this.usuario = usuario;

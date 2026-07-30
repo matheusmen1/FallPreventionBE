@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/apis/paciente")
+@CrossOrigin
 public class PacienteRestControllers
 {
     @Autowired
@@ -47,9 +48,9 @@ public class PacienteRestControllers
     @GetMapping("/getByNome/{nome}")
     public ResponseEntity<Object> getByNome(@PathVariable("nome") String nome)
     {
-        Paciente paciente = pacienteService.getByNome(nome);
-        if (paciente != null)
-            return ResponseEntity.ok().body(paciente);
+        List<Paciente> pacienteList = pacienteService.getByNome(nome);
+        if (pacienteList != null)
+            return ResponseEntity.ok().body(pacienteList);
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Encontrar Paciente"));
     }
