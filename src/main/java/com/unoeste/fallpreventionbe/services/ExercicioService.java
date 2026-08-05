@@ -50,4 +50,10 @@ public class ExercicioService
         }
 
     }
+
+    public List<Exercicio> getAllByName(String nome)
+    {
+        String novoNome = nome + "%";
+        return exercicioRepository.getAllByName(novoNome);
+    }
 }

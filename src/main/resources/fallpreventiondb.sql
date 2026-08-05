@@ -55,6 +55,7 @@ tpe_nome VARCHAR(100) NOT NULL
 CREATE TABLE IF NOT EXISTS exercicio(
 exe_id BIGSERIAL PRIMARY KEY,
 exe_nome VARCHAR(100) NOT NULL,
+exe_descricao VARCHAR(200) NOT NULL,
 exe_codigo_nome VARCHAR(100) NOT NULL,
 tpe_id BIGINT NOT NULL,
 CONSTRAINT fk_tipo_exercicio_exercicio

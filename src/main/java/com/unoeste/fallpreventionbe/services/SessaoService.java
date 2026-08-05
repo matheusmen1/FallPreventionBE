@@ -122,4 +122,33 @@ public class SessaoService
             return null;
         }
     }
+
+    public List<Sessao> getAll()
+    {
+        return sessaoRepository.findAll();
+    }
+
+    public boolean delete(Long id)
+    {
+        try {
+            Sessao sessao = sessaoRepository.findById(id).orElse(null);
+            if (sessao != null)
+            {
+                sessaoRepository.deleteResultadoSessao(sessao.getId());
+                sessaoRepository.deleteAprovacaoSessao(sessao.getId());
+                sessaoRepository.deleteSessaoFase(sessao.getId());
+                sessaoRepository.delete(sessao);
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            return false;
+        }
+
+    }
+
+    public List<Sessao> getAllByUsuarioId(Long id)
+    {
+        return sessaoRepository.getAllUsuarioById(id);
+    }
 }

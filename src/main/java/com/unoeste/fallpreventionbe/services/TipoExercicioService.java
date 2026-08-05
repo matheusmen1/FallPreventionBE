@@ -52,4 +52,9 @@ public class TipoExercicioService
     }
 
 
+    public List<TipoExercicio> getAllByName(String nome)
+    {
+        String novoNome = nome + "%";
+        return tipoExercicioRepository.getAllByName(novoNome);
+    }
 }

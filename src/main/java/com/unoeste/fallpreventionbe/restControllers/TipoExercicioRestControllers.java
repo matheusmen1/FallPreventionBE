@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("apis/tipo-exercicio")
+@CrossOrigin
 public class TipoExercicioRestControllers
 {
     @Autowired
@@ -33,6 +34,15 @@ public class TipoExercicioRestControllers
             return ResponseEntity.ok().body(tipoExercicio);
         else
             return ResponseEntity.badRequest().body(new Erro("Tipo Exercicio Não Encontrado"));
+    }
+    @GetMapping("/getAllByName/{nome}")
+    public ResponseEntity<Object> getAllByName(@PathVariable("nome") String nome)
+    {
+        List<TipoExercicio> tipoExercicios = tipoExercicioService.getAllByName(nome);
+        if (tipoExercicios != null)
+            return ResponseEntity.ok(tipoExercicios);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhum Tipo de Exercício Encontrado"));
     }
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody TipoExercicio tipoExercicio)

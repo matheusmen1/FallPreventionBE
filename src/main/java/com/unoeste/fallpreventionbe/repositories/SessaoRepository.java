@@ -47,4 +47,18 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
     @Transactional
     @Query(value = "INSERT INTO resultado_sessao (res_duracao, res_observacao, ses_id) VALUES (:duracao, :observacao, :id)", nativeQuery = true)
     public void addResultadoSessao(Integer duracao, String observacao, Long id);
+
+    @Query(value = "SELECT * FROM sessao WHERE usr_id = :id ", nativeQuery = true)
+    public List<Sessao> getAllUsuarioById(Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM resultado_sessao WHERE ses_id = :id", nativeQuery = true)
+    public void deleteResultadoSessao(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM aprovacao_sessao WHERE ses_id = :id", nativeQuery = true)
+    public void deleteAprovacaoSessao(@Param("id") Long id);
+
 }

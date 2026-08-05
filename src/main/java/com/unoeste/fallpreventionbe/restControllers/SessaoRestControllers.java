@@ -13,11 +13,21 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/apis/sessao")
+@CrossOrigin
 public class SessaoRestControllers
 {
     @Autowired
     private SessaoService sessaoService;
 
+    @GetMapping
+    public ResponseEntity<Object> getAll()
+    {
+        List<Sessao> sessaos = sessaoService.getAll();
+        if (sessaos.size() > 0)
+            return ResponseEntity.ok(sessaos);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
+    }
     @GetMapping("/status/{status}")
     public ResponseEntity<Object> getAllByStatus(@PathVariable(name = "status") String status)
     {
@@ -27,6 +37,15 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhum Sessao Encontrada"));
 
+    }
+    @GetMapping("/getAllByResponsavelId/{id}")
+    public ResponseEntity<Object> getByUsuarioId(@PathVariable("id") Long id)
+    {
+        List<Sessao> sessaos = sessaoService.getAllByUsuarioId(id);
+        if (sessaos.size() > 0)
+            return ResponseEntity.ok(sessaos);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
     }
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable("id") Long id)
@@ -101,5 +120,13 @@ public class SessaoRestControllers
             return ResponseEntity.ok().body(sessao);
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Cancelar Sessão"));
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id)
+    {
+        if (sessaoService.delete(id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Apagar Sessão"));
     }
 }
