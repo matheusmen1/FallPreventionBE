@@ -5,6 +5,7 @@ import com.unoeste.fallpreventionbe.repositories.SessaoRepository;
 import com.unoeste.fallpreventionbe.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,24 +18,23 @@ public class SessaoService
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public List<Sessao> getAllByStatus(String status)
-    {
-        return sessaoRepository.getAllByStatus(status.toUpperCase());
-    }
-
     public Sessao save(Sessao sessao)
     {
         try
         {
+            List<SessaoFase> sessaoFases = sessao.getSessaoFases();
+
             if (sessao.getId() != null)
                 sessaoRepository.deleteSessaoFase(sessao.getId());
 
-            sessao.setData_hora(LocalDateTime.now());
+            //sessao.setData_hora(LocalDateTime.now());
             sessao.setStatus("PENDENTE");
-
+            sessao.setSessaoFases(null);
+            sessao.setAprovacaoSessao(null);
+            sessao.setResultadoSessao(null);
             Sessao novaSessao = sessaoRepository.save(sessao);
 
-            List<SessaoFase> sessaoFases = sessao.getSessaoFases();
+
 
             for (SessaoFase sessaoFase : sessaoFases)
                 sessaoRepository.addSessaoFase(sessaoFase.getOrdem(),sessao.getId(),sessaoFase.getExercicio().getId());
@@ -131,17 +131,17 @@ public class SessaoService
     public boolean delete(Long id)
     {
         try {
-            Sessao sessao = sessaoRepository.findById(id).orElse(null);
-            if (sessao != null)
+            if (sessaoRepository.existsById(id))
             {
-                sessaoRepository.deleteResultadoSessao(sessao.getId());
-                sessaoRepository.deleteAprovacaoSessao(sessao.getId());
-                sessaoRepository.deleteSessaoFase(sessao.getId());
-                sessaoRepository.delete(sessao);
+                sessaoRepository.deleteResultadoSessao(id);
+                sessaoRepository.deleteAprovacaoSessao(id);
+                sessaoRepository.deleteSessaoFase(id);
+                sessaoRepository.deleteById(id);
                 return true;
             }
             return false;
         }catch (Exception e){
+            e.printStackTrace();
             return false;
         }
 
@@ -150,5 +150,15 @@ public class SessaoService
     public List<Sessao> getAllByUsuarioId(Long id)
     {
         return sessaoRepository.getAllUsuarioById(id);
+    }
+
+    public List<Sessao> getAllByStatus(String status, Long id)
+    {
+        return sessaoRepository.getAllByStatus(status, id);
+    }
+
+    public List<Sessao> getAllPendenteByFisioterapeutaId(Long id)
+    {
+        return sessaoRepository.getAllPendenteByFisioterapeutaId(id);
     }
 }

@@ -23,16 +23,26 @@ public class SessaoRestControllers
     public ResponseEntity<Object> getAll()
     {
         List<Sessao> sessaos = sessaoService.getAll();
-        if (sessaos.size() > 0)
+        if (sessaos != null)
             return ResponseEntity.ok(sessaos);
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
     }
-    @GetMapping("/status/{status}")
-    public ResponseEntity<Object> getAllByStatus(@PathVariable(name = "status") String status)
+    @GetMapping("/status/{status}/{id}")
+    public ResponseEntity<Object> getAllByStatus(@PathVariable(name = "status") String status, @PathVariable("id") Long id)
     {
-        List<Sessao> sessaos = sessaoService.getAllByStatus(status);
-        if (sessaos.size() > 0)
+        List<Sessao> sessaos = sessaoService.getAllByStatus(status, id);
+        if (sessaos != null)
+            return ResponseEntity.ok().body(sessaos);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhum Sessao Encontrada"));
+
+    }
+    @GetMapping("/pendentes/{id}")
+    public ResponseEntity<Object> getAllPendenteByFisioterapeutaId(@PathVariable("id") Long id)
+    {
+        List<Sessao> sessaos = sessaoService.getAllPendenteByFisioterapeutaId(id);
+        if (sessaos != null)
             return ResponseEntity.ok().body(sessaos);
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhum Sessao Encontrada"));
@@ -42,7 +52,7 @@ public class SessaoRestControllers
     public ResponseEntity<Object> getByUsuarioId(@PathVariable("id") Long id)
     {
         List<Sessao> sessaos = sessaoService.getAllByUsuarioId(id);
-        if (sessaos.size() > 0)
+        if (sessaos != null)
             return ResponseEntity.ok(sessaos);
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
@@ -74,7 +84,6 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhum Código Encontrado"));
     }
-
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody Sessao sessao)
     {
