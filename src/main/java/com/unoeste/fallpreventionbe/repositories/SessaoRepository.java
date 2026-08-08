@@ -25,7 +25,7 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
     public void deleteSessaoFase(@Param("id") Long id);
 
     @Query(value = "SELECT * FROM sessao WHERE ses_status = :status AND usr_id = :id", nativeQuery = true)
-    public List<Sessao> getAllByStatus(String status, Long id);
+    public List<Sessao> getAllByStatusById(String status, Long id);
 
     @Query(value = "SELECT * FROM sessao WHERE pac_id = :id", nativeQuery = true)
     public List<Sessao> getAllByPaciente(Long id);
@@ -63,4 +63,7 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
 
     @Query(value = "SELECT sessao.* FROM sessao INNER JOIN usuario ON usuario.usr_id = sessao.usr_id  WHERE (usuario.usr_responsavel_id = :id OR usuario.usr_id = :id) AND sessao.ses_status = 'PENDENTE' ", nativeQuery = true)
     public List<Sessao> getAllPendenteByFisioterapeutaId(Long id);
+
+    @Query(value = "SELECT * FROM sessao WHERE ses_status = :status ORDER BY ses_data_hora ASC ", nativeQuery = true)
+    public List<Sessao> getAllByStatus(@Param("status") String status);
 }

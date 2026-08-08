@@ -15,6 +15,8 @@ public class Sessao
     private Long id;
     @Column(name = "ses_data_hora")
     private LocalDateTime data_hora;
+    @Column(name = "ses_ordem_atual")
+    private Integer ordemAtual;
     @ManyToOne
     @JoinColumn(name = "usr_id")
     private Usuario responsavel;
@@ -33,9 +35,10 @@ public class Sessao
     @OneToMany (mappedBy = "sessao") // cascade = CascadeType.ALL
     private List<SessaoFase> sessaoFases;
 
-    public Sessao(Long id, LocalDateTime data_hora, Usuario responsavel, Paciente paciente, String status) {
+    public Sessao(Long id, LocalDateTime data_hora, Integer ordemAtual, Usuario responsavel, Paciente paciente, String status) {
         this.id = id;
         this.data_hora = data_hora;
+        this.ordemAtual = ordemAtual;
         this.responsavel = responsavel;
         this.paciente = paciente;
         this.status = status;
@@ -43,7 +46,15 @@ public class Sessao
 
     public Sessao()
     {
-        this(0L, null, null, null, "");
+        this(0L, null, null, null, null, "");
+    }
+
+    public Integer getOrdemAtual() {
+        return ordemAtual;
+    }
+
+    public void setOrdemAtual(Integer ordemAtual) {
+        this.ordemAtual = ordemAtual;
     }
 
     public Long getId() {

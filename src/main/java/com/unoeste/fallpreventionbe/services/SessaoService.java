@@ -3,9 +3,9 @@ package com.unoeste.fallpreventionbe.services;
 import com.unoeste.fallpreventionbe.entities.*;
 import com.unoeste.fallpreventionbe.repositories.SessaoRepository;
 import com.unoeste.fallpreventionbe.repositories.UsuarioRepository;
+import com.unoeste.fallpreventionbe.webSocket.SessaoWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +17,8 @@ public class SessaoService
     private SessaoRepository sessaoRepository;
     @Autowired
     private UsuarioRepository usuarioRepository;
+    @Autowired
+    private SessaoWebSocketHandler webSocketHandler;
 
     public Sessao save(Sessao sessao)
     {
@@ -152,13 +154,42 @@ public class SessaoService
         return sessaoRepository.getAllUsuarioById(id);
     }
 
-    public List<Sessao> getAllByStatus(String status, Long id)
+    public List<Sessao> getAllByStatusById(String status, Long id)
     {
-        return sessaoRepository.getAllByStatus(status, id);
+        return sessaoRepository.getAllByStatusById(status, id);
     }
 
     public List<Sessao> getAllPendenteByFisioterapeutaId(Long id)
     {
         return sessaoRepository.getAllPendenteByFisioterapeutaId(id);
+    }
+
+    public List<Sessao> getAllByStatus(String status)
+    {
+        return sessaoRepository.getAllByStatus(status);
+    }
+
+    public boolean iniciarSessao(Long id)
+    {
+        Sessao sessao = sessaoRepository.findById(id).orElse(null);
+        if (sessao != null)
+        {
+            sessao.setStatus("EM_ANDAMENTO");
+            sessao.setOrdemAtual(1);
+            Exercicio exercicio = null;
+            for (int i = 0; i < sessao.getSessaoFases().size(); i++)
+            {
+                if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
+                    exercicio = sessao.getSessaoFases().get(i).getExercicio();
+            }
+            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"pacote\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), id);
+            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+            {
+                sessaoRepository.save(sessao);
+                return true;
+            }
+
+        }
+        return false;
     }
 }

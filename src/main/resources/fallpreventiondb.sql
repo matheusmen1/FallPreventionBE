@@ -66,6 +66,7 @@ CONSTRAINT fk_tipo_exercicio_exercicio
 CREATE TABLE IF NOT EXISTS sessao(
 ses_id BIGSERIAL PRIMARY KEY,
 ses_data_hora TIMESTAMP NOT NULL,
+ses_ordem_atual INTEGER,
 usr_id BIGINT NOT NULL,
 pac_id BIGINT NOT NULL,
 ses_status VARCHAR(100) NOT NULL,

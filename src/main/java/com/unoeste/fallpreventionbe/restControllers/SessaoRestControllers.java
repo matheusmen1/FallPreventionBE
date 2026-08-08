@@ -19,6 +19,25 @@ public class SessaoRestControllers
     @Autowired
     private SessaoService sessaoService;
 
+    @PutMapping("/iniciar/{id}")
+    public ResponseEntity<Object> iniciarSessao(@PathVariable Long id)
+    {
+        if (sessaoService.iniciarSessao(id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Iniciar Sessão"));
+
+    }
+
+//    // O mesmo serve para o botão de Pausa!
+//    @PostMapping("/{id}/pausar")
+//    public ResponseEntity<String> pausarSessaoVR(@PathVariable Long id)
+//    {
+//        String comandoJson = "{\"acao\": \"PAUSAR\"}";
+//        webSocketHandler.enviarComandoParaUnity(comandoJson);
+//        return ResponseEntity.ok("Sessão pausada remotamente.");
+//    }
+
     @GetMapping
     public ResponseEntity<Object> getAll()
     {
@@ -28,10 +47,19 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
     }
-    @GetMapping("/status/{status}/{id}")
-    public ResponseEntity<Object> getAllByStatus(@PathVariable(name = "status") String status, @PathVariable("id") Long id)
+    @GetMapping("/status/{status}")
+    public ResponseEntity<Object> getAllByStatus(@PathVariable("status") String status)
     {
-        List<Sessao> sessaos = sessaoService.getAllByStatus(status, id);
+        List<Sessao> sessaos = sessaoService.getAllByStatus(status);
+        if (sessaos != null)
+            return ResponseEntity.ok(sessaos);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
+    }
+    @GetMapping("/status/{status}/{id}")
+    public ResponseEntity<Object> getAllByStatusById(@PathVariable(name = "status") String status, @PathVariable("id") Long id)
+    {
+        List<Sessao> sessaos = sessaoService.getAllByStatusById(status, id);
         if (sessaos != null)
             return ResponseEntity.ok().body(sessaos);
         else
@@ -138,4 +166,5 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Apagar Sessão"));
     }
+
 }
