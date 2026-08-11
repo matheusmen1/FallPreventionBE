@@ -135,6 +135,7 @@ public class SessaoService
         try {
             if (sessaoRepository.existsById(id))
             {
+                sessaoRepository.deleteSessaoObservacaoAll(id);
                 sessaoRepository.deleteResultadoSessao(id);
                 sessaoRepository.deleteAprovacaoSessao(id);
                 sessaoRepository.deleteSessaoFase(id);
@@ -148,7 +149,19 @@ public class SessaoService
         }
 
     }
+    public boolean deleteObservacao(Long id)
+    {
+        try {
 
+            sessaoRepository.deleteSessaoObservacao(id);
+            return true;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+    }
     public List<Sessao> getAllByUsuarioId(Long id)
     {
         return sessaoRepository.getAllUsuarioById(id);
@@ -182,7 +195,7 @@ public class SessaoService
                 if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
                     exercicio = sessao.getSessaoFases().get(i).getExercicio();
             }
-            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"pacote\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), id);
+            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"package\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), null);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
@@ -191,5 +204,116 @@ public class SessaoService
 
         }
         return false;
+    }
+
+    public Sessao sairSala(Long id)
+    {
+        try
+        {
+            Sessao novaSessao = sessaoRepository.findById(id).orElse(null);
+            if (novaSessao != null)
+            {
+                novaSessao.setStatus("APROVADA");
+                novaSessao.setOrdemAtual(0);
+                sessaoRepository.save(novaSessao);
+                return novaSessao;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    public boolean proximaFase(Long id)
+    {
+        Sessao sessao = sessaoRepository.findById(id).orElse(null);
+        if (sessao != null)
+        {
+            sessao.setOrdemAtual(sessao.getOrdemAtual() + 1);
+            Exercicio exercicio = null;
+            for (int i = 0; i < sessao.getSessaoFases().size(); i++)
+            {
+                if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
+                    exercicio = sessao.getSessaoFases().get(i).getExercicio();
+            }
+            String comandoJson = String.format("{\"acao\": \"PROXIMA_FASE\", \"package\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), null);
+            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+            {
+                sessaoRepository.save(sessao);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean pausarFase(Long id)
+    {
+        Sessao sessao = sessaoRepository.findById(id).orElse(null);
+        if (sessao != null)
+        {
+            sessao.setStatus("PAUSADA");
+            String comandoJson = String.format("{\"acao\": \"PAUSAR_FASE\", \"package\": \"%s\", \"sessaoId\": %d}", null, null);
+            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+            {
+                sessaoRepository.save(sessao);
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean retomarFase(Long id)
+    {
+        Sessao sessao = sessaoRepository.findById(id).orElse(null);
+        if (sessao != null)
+        {
+            sessao.setStatus("EM_ANDAMENTO");
+            String comandoJson = String.format("{\"acao\": \"RETOMAR_FASE\", \"package\": \"%s\", \"sessaoId\": %d}", null, null);
+            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+            {
+                sessaoRepository.save(sessao);
+                return true;
+            }
+
+        }
+        return false;
+    }
+    public boolean finalizarSessao(Long id)
+    {
+        Sessao sessao = sessaoRepository.findById(id).orElse(null);
+        if (sessao != null)
+        {
+            String comandoJson = String.format("{\"acao\": \"FINALIZAR_SESSAO\", \"package\": \"%s\", \"sessaoId\": %d}", null, id);
+            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+            {
+                sessaoRepository.save(sessao);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public SessaoObservacao addObservacao(SessaoObservacao sessaoObservacao, Long id)
+    {
+        try{
+            Sessao sessao = sessaoRepository.findById(id).orElse(null);
+            if (sessao != null)
+            {
+                sessaoObservacao.setSessao(sessao);
+                sessaoObservacao.setData_hora(LocalDateTime.now());
+                sessaoRepository.addObservacao(sessaoObservacao.getObservacao(), sessaoObservacao.getData_hora(), sessaoObservacao.getSessaoFase().getId(), id);
+                return sessaoObservacao;
+            }
+            return null;
+        }catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public List<SessaoObservacao> getAllObservacoesByPacienteAndSessao(Long idSessao, Long idPaciente)
+    {
+        return sessaoRepository.getAllObservacoesByPacienteAndSessao(idSessao, idPaciente);
     }
 }

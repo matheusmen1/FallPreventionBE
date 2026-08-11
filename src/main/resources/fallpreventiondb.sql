@@ -90,7 +90,28 @@ CONSTRAINT fk_exercicio_sessao_fase
 	FOREIGN KEY (exe_id)
 		REFERENCES exercicio (exe_id)
 );
-
+CREATE TABLE IF NOT EXISTS sessao_gravacao(
+    sesg_id BIGSERIAL PRIMARY KEY,
+    sesg_caminho_arquivo VARCHAR(255) NOT NULL,
+    sesg_data_hora TIMESTAMP NOT NULL,
+    ses_id BIGINT NOT NULL,
+CONSTRAINT fk_sessao_sessao_gravacao
+    FOREIGN KEY (ses_id)
+        REFERENCES sessao (ses_id)
+)
+CREATE TABLE IF NOT EXISTS sessao_observacao(
+    seso_id BIGSERIAL PRIMARY KEY,
+    seso_observacao VARCHAR(255) NOT NULL,
+    seso_data_hora TIMESTAMP NOT NULL,
+    sesf_id BIGINT NULL,
+    ses_id BIGINT NOT NULL,
+CONSTRAINT fk_sessao_sessao_observacao
+    FOREIGN KEY (ses_id)
+        REFERENCES sessao (ses_id),
+CONSTRAINT fk_sessao_fase_sessao_observacao
+    FOREIGN KEY (sesf_id)
+        REFERENCES sessao_fase (sesf_id)
+)
 CREATE TABLE IF NOT EXISTS resultado_sessao(
 res_id BIGSERIAL PRIMARY KEY,
 res_duracao INTEGER NOT NULL,

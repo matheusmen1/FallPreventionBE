@@ -3,6 +3,8 @@ package com.unoeste.fallpreventionbe.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "sessao_fase")
 public class SessaoFase

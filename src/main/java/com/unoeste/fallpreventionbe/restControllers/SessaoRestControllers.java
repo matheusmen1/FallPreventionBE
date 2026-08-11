@@ -1,9 +1,6 @@
 package com.unoeste.fallpreventionbe.restControllers;
 
-import com.unoeste.fallpreventionbe.entities.AprovacaoSessao;
-import com.unoeste.fallpreventionbe.entities.Erro;
-import com.unoeste.fallpreventionbe.entities.ResultadoSessao;
-import com.unoeste.fallpreventionbe.entities.Sessao;
+import com.unoeste.fallpreventionbe.entities.*;
 import com.unoeste.fallpreventionbe.services.SessaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,16 +25,38 @@ public class SessaoRestControllers
             return ResponseEntity.badRequest().body(new Erro("Erro ao Iniciar Sessão"));
 
     }
-
-//    // O mesmo serve para o botão de Pausa!
-//    @PostMapping("/{id}/pausar")
-//    public ResponseEntity<String> pausarSessaoVR(@PathVariable Long id)
-//    {
-//        String comandoJson = "{\"acao\": \"PAUSAR\"}";
-//        webSocketHandler.enviarComandoParaUnity(comandoJson);
-//        return ResponseEntity.ok("Sessão pausada remotamente.");
-//    }
-
+    @PutMapping("/proxima/{id}")
+    public ResponseEntity<Object> proximaFase(@PathVariable("id") Long id)
+    {
+        if (sessaoService.proximaFase(id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Pular Fase"));
+    }
+    @PutMapping("/pausar/{id}")
+    public ResponseEntity<Object> pausarFase(@PathVariable("id") Long id)
+    {
+        if (sessaoService.pausarFase(id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Pausar Fase"));
+    }
+    @PutMapping("/retomar/{id}")
+    public ResponseEntity<Object> retomarFase(@PathVariable("id") Long id)
+    {
+        if (sessaoService.retomarFase(id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Retomar Fase"));
+    }
+    @PutMapping("/finalizar/{id}")
+    public ResponseEntity<Object> finalizarSessao(@PathVariable("id") Long id)
+    {
+        if (sessaoService.finalizarSessao(id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Finalizar Sessao"));
+    }
     @GetMapping
     public ResponseEntity<Object> getAll()
     {
@@ -98,20 +117,21 @@ public class SessaoRestControllers
     public ResponseEntity<Object> getAllByPaciente(@PathVariable("id") Long id)
     {
         List<Sessao> sessaos = sessaoService.getAllByPaciente(id);
-        if (sessaos.size() > 0)
+        if (sessaos != null)
             return ResponseEntity.ok().body(sessaos);
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
     }
-    @GetMapping("/play/{id}")
-    public ResponseEntity<Object> getCodigosUnity(@PathVariable("id") Long id)
+    @GetMapping("/getAllObservacoesByPacienteAndSessao/{idSessao}/{idPaciente}")
+    public ResponseEntity<Object> getAllObservacoesByPacienteAndSessao(@PathVariable("idSessao") Long idSessao, @PathVariable("idPaciente") Long idPaciente)
     {
-        List<String> codigos = sessaoService.getCodigosUnity(id);
-        if (codigos.size() > 0)
-            return ResponseEntity.ok().body(codigos);
+        List<SessaoObservacao> sessaoObservacaos = sessaoService.getAllObservacoesByPacienteAndSessao(idSessao, idPaciente);
+        if (sessaoObservacaos != null)
+            return ResponseEntity.ok(sessaoObservacaos);
         else
-            return ResponseEntity.badRequest().body(new Erro("Nenhum Código Encontrado"));
+            return ResponseEntity.badRequest().body(new Erro("Nenhuma Observação Encontrada"));
     }
+
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody Sessao sessao)
     {
@@ -129,6 +149,15 @@ public class SessaoRestControllers
             return ResponseEntity.ok().body(novoResultadoSessao);
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Gravar Resultado Sessão"));
+    }
+    @PostMapping("/observacao/{id}")
+    public ResponseEntity<Object> addObservacao(@RequestBody SessaoObservacao sessaoObservacao, @PathVariable("id") Long id)
+    {
+        SessaoObservacao novaSessaoObservacao = sessaoService.addObservacao(sessaoObservacao, id);
+        if (novaSessaoObservacao != null)
+            return ResponseEntity.ok(novaSessaoObservacao);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Gravar Observação"));
     }
     @PutMapping
     public ResponseEntity<Object> update(@RequestBody Sessao sessao)
@@ -149,14 +178,14 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Aprovar/Recusar Sessão"));
     }
-    @PutMapping("cancelar/{id}")
-    public ResponseEntity<Object> cancelarSessaoPendente(@PathVariable("id") Long id)
+    @PutMapping("sairSala/{id}")
+    public ResponseEntity<Object> sairSala(@PathVariable("id") Long id)
     {
-        Sessao sessao = sessaoService.cancelarSessaoPendente(id);
+        Sessao sessao = sessaoService.sairSala(id);
         if (sessao != null)
             return ResponseEntity.ok().body(sessao);
         else
-            return ResponseEntity.badRequest().body(new Erro("Erro ao Cancelar Sessão"));
+            return ResponseEntity.badRequest().body(new Erro("Erro Ao Sair da Sala"));
     }
     @DeleteMapping("{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") Long id)
@@ -165,6 +194,14 @@ public class SessaoRestControllers
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Apagar Sessão"));
+    }
+    @DeleteMapping("/observacao/{id}")
+    public ResponseEntity<Object> deleteObservacao(@PathVariable("id") Long id)
+    {
+        if (sessaoService.deleteObservacao(id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Apagar Observação"));
     }
 
 }

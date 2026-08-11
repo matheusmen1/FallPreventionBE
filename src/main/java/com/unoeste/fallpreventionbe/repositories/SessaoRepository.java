@@ -1,6 +1,7 @@
 package com.unoeste.fallpreventionbe.repositories;
 
 import com.unoeste.fallpreventionbe.entities.Sessao;
+import com.unoeste.fallpreventionbe.entities.SessaoObservacao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -66,4 +67,22 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
 
     @Query(value = "SELECT * FROM sessao WHERE ses_status = :status ORDER BY ses_data_hora ASC ", nativeQuery = true)
     public List<Sessao> getAllByStatus(@Param("status") String status);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO sessao_observacao (seso_observacao, seso_data_hora, sesf_id, ses_id) VALUES (:observacao, :data_hora, :sesf_id, :ses_id)", nativeQuery = true)
+    public void addObservacao(@Param("observacao") String observacao,@Param("data_hora") LocalDateTime data_hora,@Param("sesf_id") Long sesf_id, @Param("ses_id") Long ses_id);
+
+    @Query(value = "SELECT sessao_observacao.* FROM sessao_observacao INNER JOIN sessao ON sessao.ses_id = sessao_observacao.ses_id WHERE sessao.pac_id = :idPaciente AND sessao.ses_id = :idSessao", nativeQuery = true)
+    public List<SessaoObservacao> getAllObservacoesByPacienteAndSessao(@Param("idSessao") Long idSessao,@Param("idPaciente") Long idPaciente);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM sessao_observacao WHERE ses_id = :id", nativeQuery = true)
+    public void deleteSessaoObservacaoAll(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM sessao_observacao WHERE seso_id = :id", nativeQuery = true)
+    public void deleteSessaoObservacao(@Param("id") Long id);
 }
