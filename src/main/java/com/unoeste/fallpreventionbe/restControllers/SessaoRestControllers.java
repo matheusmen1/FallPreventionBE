@@ -3,9 +3,12 @@ package com.unoeste.fallpreventionbe.restControllers;
 import com.unoeste.fallpreventionbe.entities.*;
 import com.unoeste.fallpreventionbe.services.SessaoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
@@ -131,7 +134,27 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhuma Observação Encontrada"));
     }
+    @GetMapping("/gravacoes/{idSessao}/{idPaciente}")
+    public ResponseEntity<Object> getAllGravacoesByPacienteAndSessao(@PathVariable("idSessao") Long idSessao, @PathVariable("idPaciente") Long idPaciente)
+    {
+        List<SessaoGravacao> sessaoGravacaos = sessaoService.getAllGravacoesByPacienteAndSessao(idSessao, idPaciente);
+        if (sessaoGravacaos != null)
+            return ResponseEntity.ok(sessaoGravacaos);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhuma Gravação Encontrada"));
+    }
+    @GetMapping("/gravacao/play/{id}")
+    public ResponseEntity<Object> playGravacao(@PathVariable("id") Long id)
+    {
+        Resource resource = sessaoService.playGravacao(id);
+        if (resource != null)
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType("video/webm"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao dar Play na Gravação"));
 
+    }
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody Sessao sessao)
     {
@@ -159,6 +182,15 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Gravar Observação"));
     }
+    @PostMapping("/gravacao/{id}")
+    public ResponseEntity<Object> addGravacao(@PathVariable("id") Long id, @RequestParam("video")MultipartFile arquivoVideo)
+    {
+        if (sessaoService.addGravacao(id, arquivoVideo))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Gravar Video"));
+    }
+
     @PutMapping
     public ResponseEntity<Object> update(@RequestBody Sessao sessao)
     {
@@ -202,6 +234,14 @@ public class SessaoRestControllers
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Apagar Observação"));
+    }
+    @DeleteMapping("/gravacao/{id}")
+    public ResponseEntity<Object> deleteGravacao(@PathVariable("id") Long id)
+    {
+        if (sessaoService.deleteGravacao(id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Apagar Gravação"));
     }
 
 }

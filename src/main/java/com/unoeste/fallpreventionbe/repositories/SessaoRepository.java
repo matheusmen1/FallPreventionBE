@@ -1,6 +1,7 @@
 package com.unoeste.fallpreventionbe.repositories;
 
 import com.unoeste.fallpreventionbe.entities.Sessao;
+import com.unoeste.fallpreventionbe.entities.SessaoGravacao;
 import com.unoeste.fallpreventionbe.entities.SessaoObservacao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -83,6 +85,29 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
 
     @Modifying
     @Transactional
+    @Query(value = "DELETE FROM sessao_gravacao WHERE ses_id = :id", nativeQuery = true)
+    public void deleteSessaoGravacaooAll(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
     @Query(value = "DELETE FROM sessao_observacao WHERE seso_id = :id", nativeQuery = true)
     public void deleteSessaoObservacao(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM sessao_gravacao WHERE sesg_id = :id", nativeQuery = true)
+    public void deleteSessaoGravacao(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO sessao_gravacao (sesg_caminho_arquivo, sesg_data_hora, ses_id) VALUES (:caminho, :data_hora, :id)", nativeQuery = true)
+    void addGravacao(@Param("caminho") String caminho,@Param("data_hora") LocalDateTime dataHora,@Param("id") Long id);
+
+    @Query(value = "SELECT sessao_gravacao.* FROM sessao_gravacao INNER JOIN sessao ON sessao.ses_id = sessao_gravacao.ses_id WHERE sessao.pac_id = :idPaciente AND sessao.ses_id = :idSessao", nativeQuery = true)
+    public List<SessaoGravacao> getAllGravacoesByPacienteAndSessao(@Param("idSessao") Long idSessao,@Param("idPaciente") Long idPaciente);
+
+    @Query(value = "SELECT * FROM sessao_gravacao WHERE sessao_gravacao.sesg_id = :id", nativeQuery = true)
+    public SessaoGravacao getSessaoGravacaoById(@Param("id") Long id);
+
+
 }

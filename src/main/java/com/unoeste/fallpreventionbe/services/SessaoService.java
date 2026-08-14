@@ -5,9 +5,18 @@ import com.unoeste.fallpreventionbe.repositories.SessaoRepository;
 import com.unoeste.fallpreventionbe.repositories.UsuarioRepository;
 import com.unoeste.fallpreventionbe.webSocket.SessaoWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -27,13 +36,19 @@ public class SessaoService
             List<SessaoFase> sessaoFases = sessao.getSessaoFases();
 
             if (sessao.getId() != null)
+            {
                 sessaoRepository.deleteSessaoFase(sessao.getId());
+            }
 
             //sessao.setData_hora(LocalDateTime.now());
-            sessao.setStatus("PENDENTE");
+            if (sessao.getResponsavel().getNivel() > 0)
+                sessao.setStatus("APROVADA");
+            else
+                sessao.setStatus("PENDENTE");
             sessao.setSessaoFases(null);
             sessao.setAprovacaoSessao(null);
             sessao.setResultadoSessao(null);
+
             Sessao novaSessao = sessaoRepository.save(sessao);
 
 
@@ -135,7 +150,9 @@ public class SessaoService
         try {
             if (sessaoRepository.existsById(id))
             {
+
                 sessaoRepository.deleteSessaoObservacaoAll(id);
+                sessaoRepository.deleteSessaoGravacaooAll(id);
                 sessaoRepository.deleteResultadoSessao(id);
                 sessaoRepository.deleteAprovacaoSessao(id);
                 sessaoRepository.deleteSessaoFase(id);
@@ -315,5 +332,105 @@ public class SessaoService
     public List<SessaoObservacao> getAllObservacoesByPacienteAndSessao(Long idSessao, Long idPaciente)
     {
         return sessaoRepository.getAllObservacoesByPacienteAndSessao(idSessao, idPaciente);
+    }
+
+    public boolean addGravacao(Long id, MultipartFile arquivoVideo)
+    {
+        try{
+
+            Sessao sessao = sessaoRepository.findById(id).orElse(null);
+            if (sessao != null)
+            {
+                //String nomePaciente = sessao.getPaciente().getNome().trim().replaceAll("[^a-zA-Z0-9]", "_");
+                String nomePaciente = sessao.getPaciente().getNome().replaceAll(" ", "");
+                String pasta = "D:/Gravacoes/Paciente_"+nomePaciente+"/"+"Sessao"+id+"/";
+                File diretorio = new File(pasta);
+                if (!diretorio.exists())
+                    diretorio.mkdirs();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
+                String dataFormatada = LocalDateTime.now().format(formatter);
+                String nomeArquivo = "sessao_" + dataFormatada + ".webm";
+                Path caminho = Paths.get(pasta + nomeArquivo);
+                Files.copy(arquivoVideo.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
+
+                SessaoGravacao gravacao = new SessaoGravacao();
+                gravacao.setSessao(sessao);
+                gravacao.setCaminho_arquivo(caminho.toString());
+                gravacao.setData_hora(LocalDateTime.now());
+                sessaoRepository.addGravacao(caminho.toString(), gravacao.getData_hora(), id);
+                return true;
+
+            }
+            return false;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<SessaoGravacao> getAllGravacoesByPacienteAndSessao(Long idSessao, Long idPaciente)
+    {
+        return sessaoRepository.getAllGravacoesByPacienteAndSessao(idSessao, idPaciente);
+    }
+
+    public Resource playGravacao(Long id)
+    {
+        try {
+
+            SessaoGravacao sessaoGravacao = sessaoRepository.getSessaoGravacaoById(id);
+            if (sessaoGravacao != null)
+            {
+                Path caminhoVideo = Paths.get(sessaoGravacao.getCaminho_arquivo());
+                Resource recursoVideo = new UrlResource(caminhoVideo.toUri());
+                if (recursoVideo.exists() && recursoVideo.isReadable())
+                {
+                    return recursoVideo;
+                }
+            }
+            return null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean deleteGravacao(Long id)
+    {
+        try{
+            SessaoGravacao sessaoGravacao = sessaoRepository.getSessaoGravacaoById(id);
+            if (sessaoGravacao != null)
+            {
+                Path caminhoVideo = Paths.get(sessaoGravacao.getCaminho_arquivo());
+                Files.delete(caminhoVideo);
+                sessaoRepository.deleteSessaoGravacao(id);
+                return true;
+            }
+            return false;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+    public boolean deleteGravacaoAll(Long id)
+    {
+        try{
+            SessaoGravacao sessaoGravacao = sessaoRepository.getSessaoGravacaoById(id);
+            if (sessaoGravacao != null)
+            {
+                Path caminhoVideo = Paths.get(sessaoGravacao.getCaminho_arquivo());
+                Files.delete(caminhoVideo);
+                sessaoRepository.deleteSessaoGravacao(id);
+                return true;
+            }
+            return false;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
     }
 }
