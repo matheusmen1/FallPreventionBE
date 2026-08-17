@@ -433,4 +433,19 @@ public class SessaoService
             return false;
         }
     }
+
+    public boolean enviarMensagem(String msg)
+    {
+        try {
+            String comandoJson = String.format("{\"acao\": \"ENVIAR_MENSAGEM\", \"package\": \"%s\", \"mensagem\": \"%s\" , \"sessaoId\": %d}", null, msg, null);
+            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+            {
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

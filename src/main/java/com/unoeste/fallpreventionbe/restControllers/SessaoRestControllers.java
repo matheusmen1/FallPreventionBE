@@ -28,6 +28,14 @@ public class SessaoRestControllers
             return ResponseEntity.badRequest().body(new Erro("Erro ao Iniciar Sessão"));
 
     }
+    @PutMapping("/mensagem/{msg}")
+    public ResponseEntity<Object> enviarMensagem(@PathVariable("msg") String msg)
+    {
+        if (sessaoService.enviarMensagem(msg))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Enviar Mensagem"));
+    }
     @PutMapping("/proxima/{id}")
     public ResponseEntity<Object> proximaFase(@PathVariable("id") Long id)
     {
