@@ -36,6 +36,22 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Enviar Mensagem"));
     }
+    @PutMapping("/reiniciar/{id}")
+    public ResponseEntity<Object> reiniciarSessao(@PathVariable("id") Long id)
+    {
+        if (sessaoService.reiniciarSessao(id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Reiniciar Sessão"));
+    }
+    @PutMapping("/reiniciar-exercicio")
+    public ResponseEntity<Object> reiniciarExercicio()
+    {
+        if (sessaoService.reiniciarExercicio())
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Reiniciar Exercício"));
+    }
     @PutMapping("/proxima/{id}")
     public ResponseEntity<Object> proximaFase(@PathVariable("id") Long id)
     {

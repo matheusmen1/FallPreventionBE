@@ -25,7 +25,8 @@ public class Sessao
     private Paciente paciente;
     @Column(name = "ses_status")
     private String status; // concluida, pendente, cancelada
-
+    @Column(name = "ses_observacao")
+    private String observacao;
     @OneToOne(mappedBy = "sessao") // cascade = CascadeType.ALL
     private AprovacaoSessao aprovacaoSessao;
 
@@ -41,18 +42,19 @@ public class Sessao
     @OneToMany(mappedBy = "sessao")
     private List<SessaoGravacao> sessaoGravacaos;
 
-    public Sessao(Long id, LocalDateTime data_hora, Integer ordemAtual, Usuario responsavel, Paciente paciente, String status) {
+    public Sessao(Long id, LocalDateTime data_hora, Integer ordemAtual, Usuario responsavel, Paciente paciente, String status, String observacao) {
         this.id = id;
         this.data_hora = data_hora;
         this.ordemAtual = ordemAtual;
         this.responsavel = responsavel;
         this.paciente = paciente;
         this.status = status;
+        this.observacao = observacao;
     }
 
     public Sessao()
     {
-        this(0L, null, null, null, null, "");
+        this(0L, null, null, null, null, "", "");
     }
 
     public Integer getOrdemAtual() {
@@ -97,6 +99,14 @@ public class Sessao
 
     public String getStatus() {
         return status;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 
     public void setStatus(String status) {

@@ -54,7 +54,7 @@ public class SessaoService
 
 
             for (SessaoFase sessaoFase : sessaoFases)
-                sessaoRepository.addSessaoFase(sessaoFase.getOrdem(),sessao.getId(),sessaoFase.getExercicio().getId());
+                sessaoRepository.addSessaoFase(sessaoFase.getOrdem(), sessaoFase.getRepeticao(), sessao.getId(),sessaoFase.getExercicio().getId());
             return novaSessao;
         }catch (Exception e){
             e.printStackTrace();
@@ -113,12 +113,6 @@ public class SessaoService
         }catch (Exception e){
             return null;
         }
-
-    }
-
-    public List<String> getCodigosUnity(Long id)
-    {
-        return sessaoRepository.getCodigoUnity(id);
 
     }
 
@@ -206,13 +200,17 @@ public class SessaoService
         {
             sessao.setStatus("EM_ANDAMENTO");
             sessao.setOrdemAtual(1);
+            Integer repeticao = 0;
             Exercicio exercicio = null;
             for (int i = 0; i < sessao.getSessaoFases().size(); i++)
             {
                 if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
+                {
                     exercicio = sessao.getSessaoFases().get(i).getExercicio();
+                    repeticao = sessao.getSessaoFases().get(i).getRepeticao();
+                }
             }
-            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"package\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), null);
+            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"package\": \"%s\", \"repeticao\": \"%d\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), repeticao, null);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
@@ -250,12 +248,16 @@ public class SessaoService
         {
             sessao.setOrdemAtual(sessao.getOrdemAtual() + 1);
             Exercicio exercicio = null;
+            Integer repeticao = 0;
             for (int i = 0; i < sessao.getSessaoFases().size(); i++)
             {
                 if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
+                {
                     exercicio = sessao.getSessaoFases().get(i).getExercicio();
+                    repeticao = sessao.getSessaoFases().get(i).getRepeticao();
+                }
             }
-            String comandoJson = String.format("{\"acao\": \"PROXIMA_FASE\", \"package\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), null);
+            String comandoJson = String.format("{\"acao\": \"PROXIMA_FASE\", \"package\": \"%s\", \"repeticao\": \"%d\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), repeticao,  null);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
@@ -448,4 +450,46 @@ public class SessaoService
             return false;
         }
     }
+
+    public boolean reiniciarSessao(Long id)
+    {
+        try{
+            Sessao sessao = sessaoRepository.findById(id).orElse(null);
+            if (sessao != null)
+            {
+                sessao.setStatus("APROVADA");
+                sessao.setOrdemAtual(0);
+                String lobby = "com.unoeste.lobby";
+                String comandoJson = String.format("{\"acao\": \"REINICIAR\", \"package\": \"%s\", \"repeticao\": \"%d\", \"mensagem\": \"%s\" , \"sessaoId\": %d}", lobby, 0, null, null);
+
+                if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+                {
+                    sessaoRepository.save(sessao);
+                    return true;
+                }
+            }
+
+            return false;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean reiniciarExercicio()
+    {
+        try{
+            String comandoJson = String.format("{\"acao\": \"REINICIAR_EXERCICIO\", \"package\": \"%s\", \"mensagem\": \"%s\" , \"sessaoId\": %d}", null, null, null);
+            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+            {
+                return true;
+            }
+            return false;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

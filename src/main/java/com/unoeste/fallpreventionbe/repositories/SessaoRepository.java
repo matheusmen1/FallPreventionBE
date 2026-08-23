@@ -19,8 +19,8 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
 {
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO sessao_fase (sesf_ordem, ses_id, exe_id) VALUES (:ordem, :ses_id, :exe_id)", nativeQuery = true)
-    public void addSessaoFase(@Param("ordem") int ordem, @Param("ses_id") Long ses_id, @Param("exe_id") Long exe_id);
+    @Query(value = "INSERT INTO sessao_fase (sesf_ordem, sesf_repeticao, ses_id, exe_id) VALUES (:ordem, :repeticao, :ses_id, :exe_id)", nativeQuery = true)
+    public void addSessaoFase(@Param("ordem") Integer ordem, @Param("repeticao") Integer repeticao, @Param("ses_id") Long ses_id, @Param("exe_id") Long exe_id);
 
     @Modifying
     @Transactional

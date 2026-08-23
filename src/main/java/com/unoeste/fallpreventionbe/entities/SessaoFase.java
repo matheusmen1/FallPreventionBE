@@ -22,17 +22,20 @@ public class SessaoFase
     private Exercicio exercicio;
     @Column(name = "sesf_ordem")
     private Integer ordem;
+    @Column(name = "sesf_repeticao")
+    private Integer repeticao;
 
-    public SessaoFase(Long id, Sessao sessao, Exercicio exercicio, Integer ordem) {
+    public SessaoFase(Long id, Sessao sessao, Exercicio exercicio, Integer ordem, Integer repeticao) {
         this.id = id;
         this.sessao = sessao;
         this.exercicio = exercicio;
         this.ordem = ordem;
+        this.repeticao = repeticao;
     }
 
     public SessaoFase()
     {
-        this(0L, null, null, 0);
+        this(0L, null, null, 0, 0);
     }
 
     public Long getId() {
@@ -65,5 +68,13 @@ public class SessaoFase
 
     public void setOrdem(Integer ordem) {
         this.ordem = ordem;
+    }
+
+    public Integer getRepeticao() {
+        return repeticao;
+    }
+
+    public void setRepeticao(Integer repeticao) {
+        this.repeticao = repeticao;
     }
 }

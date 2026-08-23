@@ -70,6 +70,7 @@ ses_ordem_atual INTEGER,
 usr_id BIGINT NOT NULL,
 pac_id BIGINT NOT NULL,
 ses_status VARCHAR(100) NOT NULL,
+ses_observacao VARCHAR(100) NULL,
 CONSTRAINT fk_usuario_sessao
 	FOREIGN KEY (usr_id)
 		REFERENCES usuario (usr_id),
@@ -81,6 +82,7 @@ CONSTRAINT fk_paciente_sessao
 CREATE TABLE IF NOT EXISTS sessao_fase(
 sesf_id BIGSERIAL PRIMARY KEY,
 sesf_ordem INTEGER NOT NULL,
+sesf_repeticao INTEGER NOT NULL,
 ses_id BIGINT NOT NULL,
 exe_id BIGINT NOT NULL,
 CONSTRAINT fk_sessao_sessao_fase
@@ -98,7 +100,7 @@ CREATE TABLE IF NOT EXISTS sessao_gravacao(
 CONSTRAINT fk_sessao_sessao_gravacao
     FOREIGN KEY (ses_id)
         REFERENCES sessao (ses_id)
-)
+);
 CREATE TABLE IF NOT EXISTS sessao_observacao(
     seso_id BIGSERIAL PRIMARY KEY,
     seso_observacao VARCHAR(255) NOT NULL,
@@ -111,7 +113,7 @@ CONSTRAINT fk_sessao_sessao_observacao
 CONSTRAINT fk_sessao_fase_sessao_observacao
     FOREIGN KEY (sesf_id)
         REFERENCES sessao_fase (sesf_id)
-)
+);
 CREATE TABLE IF NOT EXISTS resultado_sessao(
 res_id BIGSERIAL PRIMARY KEY,
 res_duracao INTEGER NOT NULL,
