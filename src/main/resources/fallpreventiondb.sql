@@ -82,7 +82,9 @@ CONSTRAINT fk_paciente_sessao
 CREATE TABLE IF NOT EXISTS sessao_fase(
 sesf_id BIGSERIAL PRIMARY KEY,
 sesf_ordem INTEGER NOT NULL,
-sesf_repeticao INTEGER NOT NULL,
+sesf_repeticao INTEGER,
+sesf_tempo FLOAT,
+sesf_is_repeticao BOOLEAN NOT NULL,
 ses_id BIGINT NOT NULL,
 exe_id BIGINT NOT NULL,
 CONSTRAINT fk_sessao_sessao_fase

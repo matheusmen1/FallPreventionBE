@@ -24,18 +24,24 @@ public class SessaoFase
     private Integer ordem;
     @Column(name = "sesf_repeticao")
     private Integer repeticao;
+    @Column(name = "sesf_tempo")
+    private Float tempo;
+    @Column(name = "sesf_is_repeticao")
+    private boolean is_repeticao;
 
-    public SessaoFase(Long id, Sessao sessao, Exercicio exercicio, Integer ordem, Integer repeticao) {
+    public SessaoFase(Long id, Sessao sessao, Exercicio exercicio, Integer ordem, Integer repeticao, Float tempo, boolean is_repeticao) {
         this.id = id;
         this.sessao = sessao;
         this.exercicio = exercicio;
         this.ordem = ordem;
         this.repeticao = repeticao;
+        this.tempo = tempo;
+        this.is_repeticao = is_repeticao;
     }
 
     public SessaoFase()
     {
-        this(0L, null, null, 0, 0);
+        this(0L, null, null, 0, 0, 0f, true);
     }
 
     public Long getId() {
@@ -76,5 +82,21 @@ public class SessaoFase
 
     public void setRepeticao(Integer repeticao) {
         this.repeticao = repeticao;
+    }
+
+    public Float getTempo() {
+        return tempo;
+    }
+
+    public void setTempo(Float tempo) {
+        this.tempo = tempo;
+    }
+
+    public boolean getIs_repeticao() {
+        return is_repeticao;
+    }
+
+    public void setIs_repeticao(boolean is_repeticao) {
+        this.is_repeticao = is_repeticao;
     }
 }

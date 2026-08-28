@@ -54,7 +54,7 @@ public class SessaoService
 
 
             for (SessaoFase sessaoFase : sessaoFases)
-                sessaoRepository.addSessaoFase(sessaoFase.getOrdem(), sessaoFase.getRepeticao(), sessao.getId(),sessaoFase.getExercicio().getId());
+                sessaoRepository.addSessaoFase(sessaoFase.getOrdem(), sessaoFase.getRepeticao(), sessaoFase.getTempo(), sessaoFase.getIs_repeticao(), sessao.getId(),sessaoFase.getExercicio().getId());
             return novaSessao;
         }catch (Exception e){
             e.printStackTrace();
@@ -200,17 +200,21 @@ public class SessaoService
         {
             sessao.setStatus("EM_ANDAMENTO");
             sessao.setOrdemAtual(1);
-            Integer repeticao = 0;
+            Integer repeticao = null;
             Exercicio exercicio = null;
+            boolean isRepeticao = true;
+            Float tempo = null;
             for (int i = 0; i < sessao.getSessaoFases().size(); i++)
             {
                 if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
                 {
                     exercicio = sessao.getSessaoFases().get(i).getExercicio();
                     repeticao = sessao.getSessaoFases().get(i).getRepeticao();
+                    tempo = sessao.getSessaoFases().get(i).getTempo();
+                    isRepeticao = sessao.getSessaoFases().get(i).getIs_repeticao();
                 }
             }
-            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"package\": \"%s\", \"repeticao\": \"%d\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), repeticao, null);
+            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"package\": \"%s\", \"repeticao\": \"%d\", \"tempo\": \"%f\", \"is_repeticao\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), repeticao, tempo, isRepeticao, null);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
@@ -248,16 +252,20 @@ public class SessaoService
         {
             sessao.setOrdemAtual(sessao.getOrdemAtual() + 1);
             Exercicio exercicio = null;
-            Integer repeticao = 0;
+            Integer repeticao = null;
+            Float tempo = null;
+            boolean isRepeticao = true;
             for (int i = 0; i < sessao.getSessaoFases().size(); i++)
             {
                 if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
                 {
                     exercicio = sessao.getSessaoFases().get(i).getExercicio();
                     repeticao = sessao.getSessaoFases().get(i).getRepeticao();
+                    tempo = sessao.getSessaoFases().get(i).getTempo();
+                    isRepeticao = sessao.getSessaoFases().get(i).getIs_repeticao();
                 }
             }
-            String comandoJson = String.format("{\"acao\": \"PROXIMA_FASE\", \"package\": \"%s\", \"repeticao\": \"%d\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), repeticao,  null);
+            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"package\": \"%s\", \"repeticao\": \"%d\", \"tempo\": \"%f\", \"is_repeticao\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), repeticao, tempo, isRepeticao, null);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
