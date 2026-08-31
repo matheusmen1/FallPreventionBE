@@ -8,7 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -28,6 +32,7 @@ public class SessaoService
     private UsuarioRepository usuarioRepository;
     @Autowired
     private SessaoWebSocketHandler webSocketHandler;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Sessao save(Sessao sessao)
     {
@@ -214,7 +219,7 @@ public class SessaoService
                     isRepeticao = sessao.getSessaoFases().get(i).getIs_repeticao();
                 }
             }
-            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"package\": \"%s\", \"repeticao\": \"%d\", \"tempo\": \"%f\", \"is_repeticao\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), repeticao, tempo, isRepeticao, null);
+            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"pacote_unity\": \"%s\", \"repeticao\": \"%d\", \"tempo\": \"%f\", \"is_repeticao\": \"%s\", \"sessao_id\": %d}", exercicio.getCodigo_nome().trim(), repeticao, tempo, isRepeticao, sessao.getId());
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
@@ -250,26 +255,31 @@ public class SessaoService
         Sessao sessao = sessaoRepository.findById(id).orElse(null);
         if (sessao != null)
         {
-            sessao.setOrdemAtual(sessao.getOrdemAtual() + 1);
-            Exercicio exercicio = null;
-            Integer repeticao = null;
-            Float tempo = null;
-            boolean isRepeticao = true;
-            for (int i = 0; i < sessao.getSessaoFases().size(); i++)
+            if (sessao.getOrdemAtual() < sessao.getSessaoFases().size())
             {
-                if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
+                sessao.setOrdemAtual(sessao.getOrdemAtual() + 1);
+                Exercicio exercicio = null;
+                Integer repeticao = null;
+                Float tempo = null;
+                boolean isRepeticao = true;
+                Long sessao_id = null;
+                for (int i = 0; i < sessao.getSessaoFases().size(); i++)
                 {
-                    exercicio = sessao.getSessaoFases().get(i).getExercicio();
-                    repeticao = sessao.getSessaoFases().get(i).getRepeticao();
-                    tempo = sessao.getSessaoFases().get(i).getTempo();
-                    isRepeticao = sessao.getSessaoFases().get(i).getIs_repeticao();
+                    if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
+                    {
+                        exercicio = sessao.getSessaoFases().get(i).getExercicio();
+                        repeticao = sessao.getSessaoFases().get(i).getRepeticao();
+                        tempo = sessao.getSessaoFases().get(i).getTempo();
+                        isRepeticao = sessao.getSessaoFases().get(i).getIs_repeticao();
+                        sessao_id = sessao.getId();
+                    }
                 }
-            }
-            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"package\": \"%s\", \"repeticao\": \"%d\", \"tempo\": \"%f\", \"is_repeticao\": \"%s\", \"sessaoId\": %d}", exercicio.getCodigo_nome().trim(), repeticao, tempo, isRepeticao, null);
-            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
-            {
-                sessaoRepository.save(sessao);
-                return true;
+                String comandoJson = String.format("{\"acao\": \"PROXIMA_FASE\", \"pacote_unity\": \"%s\", \"repeticao\": \"%d\", \"tempo\": \"%f\", \"is_repeticao\": \"%s\", \"sessao_id\": %d}", exercicio.getCodigo_nome().trim(), repeticao, tempo, isRepeticao, sessao_id);
+                if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+                {
+                    sessaoRepository.save(sessao);
+                    return true;
+                }
             }
         }
         return false;
@@ -281,7 +291,7 @@ public class SessaoService
         if (sessao != null)
         {
             sessao.setStatus("PAUSADA");
-            String comandoJson = String.format("{\"acao\": \"PAUSAR_FASE\", \"package\": \"%s\", \"sessaoId\": %d}", null, null);
+            String comandoJson = String.format("{\"acao\": \"PAUSAR_FASE\", \"pacote_unity\": \"%s\", \"sessao_id\": %d}", null, null);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
@@ -296,7 +306,7 @@ public class SessaoService
         if (sessao != null)
         {
             sessao.setStatus("EM_ANDAMENTO");
-            String comandoJson = String.format("{\"acao\": \"RETOMAR_FASE\", \"package\": \"%s\", \"sessaoId\": %d}", null, null);
+            String comandoJson = String.format("{\"acao\": \"RETOMAR_FASE\", \"pacote_unity\": \"%s\", \"sessao_id\": %d}", null, null);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
@@ -311,7 +321,7 @@ public class SessaoService
         Sessao sessao = sessaoRepository.findById(id).orElse(null);
         if (sessao != null)
         {
-            String comandoJson = String.format("{\"acao\": \"FINALIZAR_SESSAO\", \"package\": \"%s\", \"sessaoId\": %d}", null, id);
+            String comandoJson = String.format("{\"acao\": \"FINALIZAR_SESSAO\", \"pacote_unity\": \"%s\", \"sessao_id\": %d}", null, id);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
@@ -447,7 +457,7 @@ public class SessaoService
     public boolean enviarMensagem(String msg)
     {
         try {
-            String comandoJson = String.format("{\"acao\": \"ENVIAR_MENSAGEM\", \"package\": \"%s\", \"mensagem\": \"%s\" , \"sessaoId\": %d}", null, msg, null);
+            String comandoJson = String.format("{\"acao\": \"ENVIAR_MENSAGEM\", \"pacote_unity\": \"%s\", \"mensagem\": \"%s\" , \"sessao_id\": %d}", null, msg, null);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 return true;
@@ -468,7 +478,7 @@ public class SessaoService
                 sessao.setStatus("APROVADA");
                 sessao.setOrdemAtual(0);
                 String lobby = "com.unoeste.lobby";
-                String comandoJson = String.format("{\"acao\": \"REINICIAR\", \"package\": \"%s\", \"repeticao\": \"%d\", \"mensagem\": \"%s\" , \"sessaoId\": %d}", lobby, 0, null, null);
+                String comandoJson = String.format("{\"acao\": \"REINICIAR\", \"pacote_unity\": \"%s\", \"repeticao\": \"%d\", \"mensagem\": \"%s\" , \"sessao_id\": %d}", lobby, 0, null, null);
 
                 if (webSocketHandler.enviarComandoParaUnity(comandoJson))
                 {
@@ -487,7 +497,7 @@ public class SessaoService
     public boolean reiniciarExercicio()
     {
         try{
-            String comandoJson = String.format("{\"acao\": \"REINICIAR_EXERCICIO\", \"package\": \"%s\", \"mensagem\": \"%s\" , \"sessaoId\": %d}", null, null, null);
+            String comandoJson = String.format("{\"acao\": \"REINICIAR_EXERCICIO\", \"pacote_unity\": \"%s\", \"mensagem\": \"%s\" , \"sessao_id\": %d}", null, null, null);
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 return true;
@@ -499,5 +509,59 @@ public class SessaoService
             return false;
         }
     }
+    @Transactional
+    public void proximaFaseUnity(WebSocketSession session, Long sessaoId)
+    {
+        try {
+            Sessao sessao = sessaoRepository.findById(sessaoId).orElse(null);
+            if (sessao != null)
+            {
+                System.out.println(sessao.getOrdemAtual());
+                System.out.println(sessao.getSessaoFases().size());
+                if (sessao.getOrdemAtual() < sessao.getSessaoFases().size())
+                {
+                    sessao.setOrdemAtual(sessao.getOrdemAtual() + 1);
+                    Exercicio exercicio = null;
+                    Integer repeticao = null;
+                    Float tempo = null;
+                    boolean isRepeticao = true;
+                    Long sessao_id = null;
+                    for (int i = 0; i < sessao.getSessaoFases().size(); i++)
+                    {
+                        if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
+                        {
+                            exercicio = sessao.getSessaoFases().get(i).getExercicio();
+                            repeticao = sessao.getSessaoFases().get(i).getRepeticao();
+                            tempo = sessao.getSessaoFases().get(i).getTempo();
+                            isRepeticao = sessao.getSessaoFases().get(i).getIs_repeticao();
+                            sessao_id = sessao.getId();
+                        }
+                    }
+                    Pacote pacote = new Pacote();
+                    pacote.setAcao("PROXIMA_FASE_UNITY");
+                    pacote.setSessao_id(sessao_id);
+                    pacote.setIs_repeticao(isRepeticao);
+                    pacote.setTempo(tempo);
+                    pacote.setRepeticao(repeticao);
+                    pacote.setPacote_unity(exercicio.getCodigo_nome());
+                    String json = objectMapper.writeValueAsString(pacote);
+                    session.sendMessage(new TextMessage(json));
+                    sessaoRepository.save(sessao);
+                }
+                else
+                {
+                    Pacote pacote = new Pacote();
+                    pacote.setAcao("FINALIZAR_SESSAO");
+                    pacote.setPacote_unity("com.unoeste.lobby");
+                    String json = objectMapper.writeValueAsString(pacote);
+                    session.sendMessage(new TextMessage(json));
+                    // finalizar depois
 
+                }
+            }
+
+        }catch (Exception e){
+        }
+
+    }
 }

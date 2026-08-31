@@ -15,11 +15,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
     private SessaoWebSocketHandler sessaoWebSocketHandler;
     @Autowired
     private WebRTCHandler webRTCHandler;
+    @Autowired
+    private ReactWebSocketHandler reactWebSocketHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry)
     {
         registry.addHandler(sessaoWebSocketHandler, "/ws/sessao").setAllowedOrigins("*");
         registry.addHandler(webRTCHandler, "/ws/webrtc").setAllowedOrigins("*");
+        registry.addHandler(reactWebSocketHandler, "/ws/react").setAllowedOrigins("*");
     }
 }

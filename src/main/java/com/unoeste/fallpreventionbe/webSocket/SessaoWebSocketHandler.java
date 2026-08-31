@@ -1,10 +1,15 @@
 package com.unoeste.fallpreventionbe.webSocket;
 
+import com.unoeste.fallpreventionbe.entities.Pacote;
+import com.unoeste.fallpreventionbe.services.SessaoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -12,9 +17,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Component
 public class SessaoWebSocketHandler extends TextWebSocketHandler
 {
+    @Autowired
+    @Lazy
+    private SessaoService sessaoService;
 
+    @Autowired
+    private ReactWebSocketHandler reactWebSocketHandler;
     private final CopyOnWriteArrayList<WebSocketSession> sessoesConectadas = new CopyOnWriteArrayList<>();
-
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Override
     public void afterConnectionEstablished(WebSocketSession sessao) throws Exception
     {
@@ -48,4 +58,28 @@ public class SessaoWebSocketHandler extends TextWebSocketHandler
         }
         return false;
     }
+
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception
+    {
+
+        String payload = message.getPayload();
+
+        Pacote pacote = objectMapper.readValue(payload, Pacote.class);
+
+        switch (pacote.getAcao()) {
+
+            case "PROXIMA_FASE":
+                sessaoService.proximaFaseUnity(session, pacote.getSessao_id());
+                reactWebSocketHandler.avisarReact(pacote.getAcao()+"_REACT");
+                break;
+            case "HABILITAR_BOTAO_REINICIAR_INTERVENCAO":
+                reactWebSocketHandler.avisarReact(pacote.getAcao());
+                break;
+
+        }
+    }
+
+
+
 }
