@@ -22,21 +22,29 @@ public class Paciente
     private String telefone;
     @Column(name = "pac_cpf")
     private String cpf;
+    @Column(name = "pac_tipo_pessoa")
+    private String tipo_pessoa;
+    @Column(name = "pac_observacao")
+    private String observacao;
+    @ManyToOne
+    @JoinColumn(name = "doe_id")
+    private Doenca doenca;
 
-    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf) {
+    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf, String tipo_pessoa, Doenca doenca, String observacao) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.data_nascimento = data_nascimento;
         this.telefone = telefone;
         this.cpf = cpf;
+        this.tipo_pessoa = tipo_pessoa;
+        this.doenca = doenca;
+        this.observacao = observacao;
     }
-
     public Paciente()
     {
-        this(0L, "", "", null, "", "");
+        this(0L, "", "", null, "", "", "", null, "");
     }
-
     public Long getId() {
         return id;
     }
@@ -83,5 +91,29 @@ public class Paciente
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
+    }
+
+    public String getTipo_pessoa() {
+        return tipo_pessoa;
+    }
+
+    public void setTipo_pessoa(String tipo_pessoa) {
+        this.tipo_pessoa = tipo_pessoa;
+    }
+
+    public Doenca getDoenca() {
+        return doenca;
+    }
+
+    public void setDoenca(Doenca doenca) {
+        this.doenca = doenca;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 }

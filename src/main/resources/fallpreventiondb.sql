@@ -20,8 +20,13 @@ pac_nome VARCHAR(100) NOT NULL,
 pac_email VARCHAR(100) NOT NULL,
 pac_data_nascimento DATE NOT NULL,
 pac_telefone VARCHAR(100) NOT NULL,
-pac_cpf VARCHAR(100) NOT NULL
-
+pac_cpf VARCHAR(100) NOT NULL,
+pac_tipo_pessoa VARCHAR(100) NOT NULL,
+pac_observacao VARCHAR(100),
+doe_id BIGINT NOT NULL,
+CONSTRAINT fk_paciente_doenca
+    FOREIGN KEY (doe_id)
+        REFERENCES doenca (doe_id)
 );
 
 CREATE TABLE IF NOT EXISTS ficha_avaliacao(
@@ -139,4 +144,9 @@ CONSTRAINT fk_sessao_aprovacao_sessao
 CONSTRAINT fk_usuario_aprovacao_sessao
 	FOREIGN KEY (usr_id)
 		REFERENCES usuario (usr_id)
+);
+
+CREATE TABLE IF NOT EXISTS doenca(
+doe_id BIGSERIAL PRIMARY KEY,
+doe_nome VARCHAR(100) NOT NULL
 );
