@@ -148,5 +148,6 @@ CONSTRAINT fk_usuario_aprovacao_sessao
 
 CREATE TABLE IF NOT EXISTS doenca(
 doe_id BIGSERIAL PRIMARY KEY,
-doe_nome VARCHAR(100) NOT NULL
+doe_nome VARCHAR(100) NOT NULL,
+doe_descricao VARCHAR(100)
 );

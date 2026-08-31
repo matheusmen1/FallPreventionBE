@@ -12,14 +12,17 @@ public class Doenca
     private Long id;
     @Column(name = "doe_nome")
     private String nome;
+    @Column(name = "doe_descricao")
+    private String descricao;
 
-    public Doenca(Long id, String nome) {
+    public Doenca(Long id, String nome, String descricao) {
         this.id = id;
         this.nome = nome;
+        this.descricao = descricao;
     }
     public Doenca()
     {
-        this(0L, "");
+        this(0L, "", "");
     }
     public Long getId() {
         return id;
@@ -35,5 +38,13 @@ public class Doenca
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }
