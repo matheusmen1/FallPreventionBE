@@ -129,7 +129,7 @@ CONSTRAINT fk_sessao_resultado_sessao
 CREATE TABLE IF NOT EXISTS aprovacao_sessao(
 apr_id BIGSERIAL PRIMARY KEY,
 apr_data_hora TIMESTAMP NOT NULL,
-apr_motivo VARCHAR(100),
+apr_motivo VARCHAR(500),
 apr_status VARCHAR(100) NOT NULL,
 ses_id BIGINT NOT NULL,
 usr_id BIGINT NOT NULL,

@@ -96,6 +96,7 @@ public class SessaoService
             Sessao sessao = sessaoRepository.findById(id).orElse(null);
             if (sessao != null)
             {
+
                 Usuario fisio = usuarioRepository.findById(aprovacaoSessao.getFisioterapeuta().getId()).orElse(null);
 
                 if (fisio != null && fisio.getNivel() > 0)
@@ -103,6 +104,18 @@ public class SessaoService
                     aprovacaoSessao.setData_hora(LocalDateTime.now());
                     aprovacaoSessao.setSessao(sessao);
                     aprovacaoSessao.setFisioterapeuta(fisio);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
+                    if (sessao.getAprovacaoSessao() != null)
+                    {
+                        AprovacaoSessao aprovacaoSessaoAntigo = sessao.getAprovacaoSessao();
+                        String motivoConcatenado = aprovacaoSessaoAntigo.getMotivo() +"\n"+
+                                aprovacaoSessao.getData_hora().format(formatter)+", "+ aprovacaoSessao.getMotivo();
+                        aprovacaoSessao.setMotivo(motivoConcatenado);
+                    }
+                    else
+                    {
+                        aprovacaoSessao.setMotivo(aprovacaoSessao.getData_hora().format(formatter) +", " + aprovacaoSessao.getMotivo());
+                    }
 
                     sessao.setStatus(aprovacaoSessao.getStatus().toUpperCase());
                     sessaoRepository.save(sessao);
