@@ -23,7 +23,7 @@ pac_telefone VARCHAR(100) NOT NULL,
 pac_cpf VARCHAR(100) NOT NULL,
 pac_tipo_pessoa VARCHAR(100) NOT NULL,
 pac_observacao VARCHAR(100),
-doe_id BIGINT NOT NULL,
+doe_id BIGINT,
 CONSTRAINT fk_paciente_doenca
     FOREIGN KEY (doe_id)
         REFERENCES doenca (doe_id)
@@ -62,6 +62,8 @@ exe_id BIGSERIAL PRIMARY KEY,
 exe_nome VARCHAR(100) NOT NULL,
 exe_descricao VARCHAR(200) NOT NULL,
 exe_codigo_nome VARCHAR(100) NOT NULL,
+exe_url_video VARCHAR(500),
+exe_url_foto VARCHAR(500),
 tpe_id BIGINT NOT NULL,
 CONSTRAINT fk_tipo_exercicio_exercicio
 	FOREIGN KEY (tpe_id)
@@ -110,7 +112,7 @@ CONSTRAINT fk_sessao_sessao_gravacao
 );
 CREATE TABLE IF NOT EXISTS sessao_observacao(
     seso_id BIGSERIAL PRIMARY KEY,
-    seso_observacao VARCHAR(255) NOT NULL,
+    seso_observacao VARCHAR(500) NOT NULL,
     seso_data_hora TIMESTAMP NOT NULL,
     sesf_id BIGINT NULL,
     ses_id BIGINT NOT NULL,

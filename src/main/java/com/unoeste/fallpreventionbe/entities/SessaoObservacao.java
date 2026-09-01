@@ -18,7 +18,7 @@ public class SessaoObservacao
     @Column(name = "seso_data_hora")
     private LocalDateTime data_hora;
     @JsonIgnore
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "ses_id")
     private Sessao sessao;
 

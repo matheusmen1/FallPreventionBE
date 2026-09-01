@@ -19,18 +19,23 @@ public class Exercicio
     private TipoExercicio tipo_exercicio;
     @Column(name = "exe_codigo_nome") // referencia dos códigos da unity
     private String codigo_nome;
+    @Column(name = "exe_url_video")
+    private String url_video;
+    @Column(name = "exe_url_foto")
+    private String url_foto;
 
-
-    public Exercicio(Long id, String nome, String descricao, TipoExercicio tipo_exercicio, String codigo_nome) {
+    public Exercicio(Long id, String nome, String descricao, TipoExercicio tipo_exercicio, String codigo_nome, String url_video, String url_foto) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.tipo_exercicio = tipo_exercicio;
         this.codigo_nome = codigo_nome;
+        this.url_video = url_video;
+        this.url_foto = url_foto;
     }
 
     public Exercicio() {
-        this(0L, "", "",null, "");
+        this(0L, "", "",null, "", "", "");
     }
 
     public Long getId() {
@@ -71,5 +76,21 @@ public class Exercicio
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getUrl_video() {
+        return url_video;
+    }
+
+    public void setUrl_video(String url_video) {
+        this.url_video = url_video;
+    }
+
+    public String getUrl_foto() {
+        return url_foto;
+    }
+
+    public void setUrl_foto(String url_foto) {
+        this.url_foto = url_foto;
     }
 }

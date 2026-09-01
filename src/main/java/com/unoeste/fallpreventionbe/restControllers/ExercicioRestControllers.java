@@ -4,8 +4,10 @@ import com.unoeste.fallpreventionbe.entities.Erro;
 import com.unoeste.fallpreventionbe.entities.Exercicio;
 import com.unoeste.fallpreventionbe.services.ExercicioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -44,19 +46,19 @@ public class ExercicioRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhum Exercício Encontrado"));
     }
-    @PostMapping
-    public ResponseEntity<Object> add(@RequestBody Exercicio exercicio)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> add(@RequestPart Exercicio exercicio, @RequestPart(value = "video", required = false) MultipartFile video, @RequestPart(value = "foto", required = false) MultipartFile foto)
     {
-        Exercicio novoExercicio = exercicioService.save(exercicio);
+        Exercicio novoExercicio = exercicioService.save(exercicio, video, foto);
         if (novoExercicio != null)
             return ResponseEntity.ok().body(novoExercicio);
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Gravar Exercicio"));
     }
-    @PutMapping
-    public ResponseEntity<Object> alterar(@RequestBody Exercicio exercicio)
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> alterar(@RequestPart Exercicio exercicio, @RequestPart(value = "video", required = false) MultipartFile video, @RequestPart(value = "foto", required = false) MultipartFile foto)
     {
-        Exercicio novoExercicio = exercicioService.save(exercicio);
+        Exercicio novoExercicio = exercicioService.save(exercicio, video, foto);
         if (novoExercicio != null)
             return ResponseEntity.ok().body(novoExercicio);
         else

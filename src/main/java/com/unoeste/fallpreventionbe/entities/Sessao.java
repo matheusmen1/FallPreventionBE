@@ -36,8 +36,8 @@ public class Sessao
     @OneToMany (mappedBy = "sessao") // cascade = CascadeType.ALL
     private List<SessaoFase> sessaoFases;
 
-    @OneToMany(mappedBy = "sessao")
-    private List<SessaoObservacao> sessaoObservacaos;
+    @OneToOne(mappedBy = "sessao")
+    private SessaoObservacao sessaoObservacaos;
 
     @OneToMany(mappedBy = "sessao")
     private List<SessaoGravacao> sessaoGravacaos;
@@ -137,11 +137,11 @@ public class Sessao
         this.sessaoFases = sessaoFases;
     }
 
-    public List<SessaoObservacao> getSessaoObservacaos() {
+    public SessaoObservacao getSessaoObservacaos() {
         return sessaoObservacaos;
     }
 
-    public void setSessaoObservacaos(List<SessaoObservacao> sessaoObservacaos) {
+    public void setSessaoObservacaos(SessaoObservacao sessaoObservacaos) {
         this.sessaoObservacaos = sessaoObservacaos;
     }
 
