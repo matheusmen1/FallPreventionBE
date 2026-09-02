@@ -233,6 +233,7 @@ public class SessaoService
                 }
             }
             String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"pacote_unity\": \"%s\", \"repeticao\": \"%d\", \"tempo\": \"%f\", \"is_repeticao\": \"%s\", \"sessao_id\": %d}", exercicio.getCodigo_nome().trim(), repeticao, tempo, isRepeticao, sessao.getId());
+
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 sessaoRepository.save(sessao);
@@ -352,7 +353,41 @@ public class SessaoService
             {
                 sessaoObservacao.setSessao(sessao);
                 sessaoObservacao.setData_hora(LocalDateTime.now());
-                sessaoRepository.addObservacao(sessaoObservacao.getObservacao(), sessaoObservacao.getData_hora(), sessaoObservacao.getSessaoFase().getId(), id);
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
+                if (sessao.getSessaoObservacaos() == null)
+                {
+
+                    if (sessaoObservacao.getSessaoFase() != null)
+                    {
+                        sessaoObservacao.setObservacao(sessaoObservacao.getData_hora().format(formatter)+" ("+sessaoObservacao.getSessaoFase().getExercicio().getNome()+")"+": "+sessaoObservacao.getObservacao());
+                        sessaoRepository.addObservacao(sessaoObservacao.getObservacao(), sessaoObservacao.getData_hora(), sessaoObservacao.getSessaoFase().getId(), id);
+                    }
+                    else
+                    {
+                        sessaoObservacao.setObservacao(sessaoObservacao.getData_hora().format(formatter)+" (Geral)"+": "+sessaoObservacao.getObservacao());
+                        sessaoRepository.addObservacaoSemFase(sessaoObservacao.getObservacao(), sessaoObservacao.getData_hora(), id);
+                    }
+                }
+                else
+                {
+                    SessaoObservacao sessaoObservacaoAntigo = sessao.getSessaoObservacaos();
+
+                    if (sessaoObservacao.getSessaoFase() != null)
+                    {
+                        String concatenada = sessaoObservacaoAntigo.getObservacao()+"\n"+ sessaoObservacao.getData_hora().format(formatter)+" ("+sessaoObservacao.getSessaoFase().getExercicio().getNome()+")"+": "+sessaoObservacao.getObservacao();
+                        sessaoObservacao.setObservacao(concatenada);
+                        sessaoRepository.updateObservacao(sessaoObservacao.getObservacao(), sessaoObservacao.getData_hora(), sessaoObservacao.getSessaoFase().getId(), id);
+                    }
+                    else
+                    {
+                        String concatenada = sessaoObservacaoAntigo.getObservacao()+"\n"+sessaoObservacao.getData_hora().format(formatter)+" (Geral)"+": "+sessaoObservacao.getObservacao();
+                        sessaoObservacao.setObservacao(concatenada);
+                        sessaoRepository.updateObservacaoSemFase(sessaoObservacao.getObservacao(), sessaoObservacao.getData_hora(), id);
+                    }
+
+                }
+
                 return sessaoObservacao;
             }
             return null;
@@ -577,5 +612,10 @@ public class SessaoService
         }catch (Exception e){
         }
 
+    }
+
+    public SessaoObservacao getSessaoObservacaoById(Long id)
+    {
+        return sessaoRepository.getSessaoObservacaoById(id);
     }
 }

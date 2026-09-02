@@ -75,6 +75,11 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
     @Query(value = "INSERT INTO sessao_observacao (seso_observacao, seso_data_hora, sesf_id, ses_id) VALUES (:observacao, :data_hora, :sesf_id, :ses_id)", nativeQuery = true)
     public void addObservacao(@Param("observacao") String observacao,@Param("data_hora") LocalDateTime data_hora,@Param("sesf_id") Long sesf_id, @Param("ses_id") Long ses_id);
 
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO sessao_observacao (seso_observacao, seso_data_hora, ses_id) VALUES (:observacao, :data_hora, :ses_id)", nativeQuery = true)
+    public void addObservacaoSemFase(@Param("observacao") String observacao,@Param("data_hora") LocalDateTime data_hora, @Param("ses_id") Long ses_id);
+
     @Query(value = "SELECT sessao_observacao.* FROM sessao_observacao INNER JOIN sessao ON sessao.ses_id = sessao_observacao.ses_id WHERE sessao.pac_id = :idPaciente AND sessao.ses_id = :idSessao", nativeQuery = true)
     public List<SessaoObservacao> getAllObservacoesByPacienteAndSessao(@Param("idSessao") Long idSessao,@Param("idPaciente") Long idPaciente);
 
@@ -109,5 +114,16 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
     @Query(value = "SELECT * FROM sessao_gravacao WHERE sessao_gravacao.sesg_id = :id", nativeQuery = true)
     public SessaoGravacao getSessaoGravacaoById(@Param("id") Long id);
 
+    @Query(value = "SELECT * FROM sessao_observacao WHERE ses_id = :id", nativeQuery = true)
+    public SessaoObservacao getSessaoObservacaoById(@Param("id") Long id);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE sessao_observacao SET seso_observacao = :observacao,  seso_data_hora = :dataHora, sesf_id = :id WHERE ses_id = :id1", nativeQuery = true)
+    public void updateObservacao(@Param("observacao") String observacao, @Param("dataHora") LocalDateTime dataHora,@Param("id") Long id, @Param("id1") Long id1);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE sessao_observacao SET seso_observacao = :observacao,  seso_data_hora = :dataHora WHERE ses_id = :id", nativeQuery = true)
+    public void updateObservacaoSemFase(@Param("observacao") String observacao,@Param("dataHora") LocalDateTime dataHora,@Param("id") Long id);
 }

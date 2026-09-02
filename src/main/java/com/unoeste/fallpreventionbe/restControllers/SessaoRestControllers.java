@@ -158,6 +158,15 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhuma Observação Encontrada"));
     }
+    @GetMapping("/getSessaoObservacaoById/{id}")
+    public ResponseEntity<Object> getSessaoObservacaoById (@PathVariable("id") Long id)
+    {
+        SessaoObservacao sessaoObservacao = sessaoService.getSessaoObservacaoById(id);
+        if (sessaoObservacao != null)
+            return ResponseEntity.ok().body(sessaoObservacao);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Encontrar Sessão Observação"));
+    }
     @GetMapping("/gravacoes/{idSessao}/{idPaciente}")
     public ResponseEntity<Object> getAllGravacoesByPacienteAndSessao(@PathVariable("idSessao") Long idSessao, @PathVariable("idPaciente") Long idPaciente)
     {
