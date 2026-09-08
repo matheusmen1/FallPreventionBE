@@ -131,6 +131,15 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
     }
+    @GetMapping("/getAllByResponsavelIdAndStatus/{id}/{status}")
+    public ResponseEntity<Object> getByUsuarioIdAndStatus(@PathVariable("id") Long id, @PathVariable("status") String status)
+    {
+        List<Sessao> sessaos = sessaoService.getAllByUsuarioIdAndStatus(id, status);
+        if (sessaos != null)
+            return ResponseEntity.ok(sessaos);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessão Encontrada"));
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable("id") Long id)
     {

@@ -618,4 +618,9 @@ public class SessaoService
     {
         return sessaoRepository.getSessaoObservacaoById(id);
     }
+
+    public List<Sessao> getAllByUsuarioIdAndStatus(Long id, String status)
+    {
+        return sessaoRepository.getAllUsuarioByIdAndStatus(id, status);
+    }
 }

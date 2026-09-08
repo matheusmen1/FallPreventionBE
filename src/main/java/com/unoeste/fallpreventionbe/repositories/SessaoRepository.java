@@ -126,4 +126,7 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
     @Transactional
     @Query(value = "UPDATE sessao_observacao SET seso_observacao = :observacao,  seso_data_hora = :dataHora WHERE ses_id = :id", nativeQuery = true)
     public void updateObservacaoSemFase(@Param("observacao") String observacao,@Param("dataHora") LocalDateTime dataHora,@Param("id") Long id);
+
+    @Query(value = "SELECT sessao.* from sessao INNER JOIN usuario ON sessao.usr_id = usuario.usr_id WHERE usuario.usr_responsavel_id =:id AND sessao.ses_status =:status ", nativeQuery = true)
+    public List<Sessao> getAllUsuarioByIdAndStatus(Long id, String status);
 }
