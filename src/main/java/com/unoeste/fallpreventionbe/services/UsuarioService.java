@@ -120,4 +120,9 @@ public class UsuarioService
     {
         return usuarioRepository.getAllFisioterapeutas();
     }
+
+    public List<Usuario> getAllMonitoresAutorizados(Long id)
+    {
+        return usuarioRepository.getAllMonitoresAutorizados(id);
+    }
 }

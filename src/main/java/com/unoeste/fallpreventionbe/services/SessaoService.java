@@ -39,7 +39,7 @@ public class SessaoService
         try
         {
             List<SessaoFase> sessaoFases = sessao.getSessaoFases();
-
+            List<Usuario> monitoresAutorizados = sessao.getSessaoMonitoresAutorizados();
             if (sessao.getId() != null)
             {
                 sessaoRepository.deleteSessaoFase(sessao.getId());
@@ -53,10 +53,13 @@ public class SessaoService
             sessao.setSessaoFases(null);
             sessao.setAprovacaoSessao(null);
             sessao.setResultadoSessao(null);
+            sessao.setSessaoMonitoresAutorizados(null);
 
             Sessao novaSessao = sessaoRepository.save(sessao);
 
 
+            for (Usuario usuario : monitoresAutorizados)
+                sessaoRepository.addMonitorAutorizado(usuario.getId(), sessao.getId());
 
             for (SessaoFase sessaoFase : sessaoFases)
                 sessaoRepository.addSessaoFase(sessaoFase.getOrdem(), sessaoFase.getRepeticao(), sessaoFase.getTempo(), sessaoFase.getIs_repeticao(), sessao.getId(),sessaoFase.getExercicio().getId());
@@ -622,5 +625,10 @@ public class SessaoService
     public List<Sessao> getAllByUsuarioIdAndStatus(Long id, String status)
     {
         return sessaoRepository.getAllUsuarioByIdAndStatus(id, status);
+    }
+
+    public List<Sessao> getAllSessoesAutorizadasByMonitor(Long id, String status)
+    {
+        return sessaoRepository.getAllSessoesAutorizadasByMonitor(id, status);
     }
 }

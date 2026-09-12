@@ -122,6 +122,15 @@ public class SessaoRestControllers
             return ResponseEntity.badRequest().body(new Erro("Nenhum Sessao Encontrada"));
 
     }
+    @GetMapping("/getAllSessoesAutorizadasByMonitor/{id}/{status}")
+    public ResponseEntity<Object> getAllSessoesAutorizadasByMonitor(@PathVariable Long id, @PathVariable String status)
+    {
+        List<Sessao> sessaos = sessaoService.getAllSessoesAutorizadasByMonitor(id, status);
+        if (sessaos != null)
+            return ResponseEntity.ok().body(sessaos);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhuma Sessao Encontrada"));
+    }
     @GetMapping("/getAllByResponsavelId/{id}")
     public ResponseEntity<Object> getByUsuarioId(@PathVariable("id") Long id)
     {

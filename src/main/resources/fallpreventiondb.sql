@@ -153,3 +153,17 @@ doe_id BIGSERIAL PRIMARY KEY,
 doe_nome VARCHAR(100) NOT NULL,
 doe_descricao VARCHAR(100)
 );
+
+CREATE TABLE IF NOT EXISTS sessao_monitores_autorizados(
+sesm_id BIGSERIAL PRIMARY KEY,
+ses_id BIGINT NOT NULL,
+usr_id BIGINT NOT NULL,
+CONSTRAINT fk_sessao_monitores_autorizados_sessao
+    FOREIGN KEY (ses_id)
+        REFERENCES sessao(ses_id),
+CONSTRAINT fk_sessao_monitores_autorizados_usuario
+    FOREIGN KEY (usr_id)
+        REFERENCES usuario (usr_id)
+CONSTRAINT uk_sessao_monitor
+    UNIQUE (ses_id, usr_id)
+);

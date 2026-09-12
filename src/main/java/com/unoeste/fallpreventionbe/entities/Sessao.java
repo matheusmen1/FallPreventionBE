@@ -42,6 +42,10 @@ public class Sessao
     @OneToMany(mappedBy = "sessao")
     private List<SessaoGravacao> sessaoGravacaos;
 
+    @ManyToMany
+    @JoinTable(name = "sessao_monitores_autorizados", joinColumns = @JoinColumn(name = "ses_id"), inverseJoinColumns = @JoinColumn(name = "usr_id"))
+    private List<Usuario> sessaoMonitoresAutorizados;
+
     public Sessao(Long id, LocalDateTime data_hora, Integer ordemAtual, Usuario responsavel, Paciente paciente, String status, String observacao) {
         this.id = id;
         this.data_hora = data_hora;
@@ -151,5 +155,13 @@ public class Sessao
 
     public void setSessaoGravacaos(List<SessaoGravacao> sessaoGravacaos) {
         this.sessaoGravacaos = sessaoGravacaos;
+    }
+
+    public List<Usuario> getSessaoMonitoresAutorizados() {
+        return sessaoMonitoresAutorizados;
+    }
+
+    public void setSessaoMonitoresAutorizados(List<Usuario> sessaoMonitoresAutorizados) {
+        this.sessaoMonitoresAutorizados = sessaoMonitoresAutorizados;
     }
 }

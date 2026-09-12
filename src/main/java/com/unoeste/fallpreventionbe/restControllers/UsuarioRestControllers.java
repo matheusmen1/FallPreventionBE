@@ -54,6 +54,15 @@ public class UsuarioRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhum Monitor Encontrado"));
     }
+    @GetMapping("/getAllMonitoresAutorizados/{id}")
+    public ResponseEntity<Object> getAllMonitoresAutorizados(@PathVariable Long id)
+    {
+        List<Usuario> usuarios = usuarioService.getAllMonitoresAutorizados(id);
+        if (usuarios != null)
+            return ResponseEntity.ok().body(usuarios);
+        else
+            return ResponseEntity.badRequest().body(new Erro("Nenhum Usuario Encontrado"));
+    }
     @PostMapping
     public ResponseEntity<Object> addUsuario(@RequestBody Usuario usuario)
     {

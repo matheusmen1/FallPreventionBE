@@ -129,4 +129,12 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
 
     @Query(value = "SELECT sessao.* from sessao INNER JOIN usuario ON sessao.usr_id = usuario.usr_id WHERE usuario.usr_responsavel_id =:id AND sessao.ses_status =:status ", nativeQuery = true)
     public List<Sessao> getAllUsuarioByIdAndStatus(Long id, String status);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO sessao_monitores_autorizados (usr_id, ses_id) VALUES (:id, :id1)", nativeQuery = true)
+    public void addMonitorAutorizado(Long id, Long id1);
+
+    @Query(value = "SELECT sessao.* FROM sessao INNER JOIN sessao_monitores_autorizados ON sessao.ses_id = sessao_monitores_autorizados.ses_id WHERE sessao.ses_status = :status AND sessao_monitores_autorizados.usr_id = :id", nativeQuery = true)
+    public List<Sessao> getAllSessoesAutorizadasByMonitor(Long id, String status);
 }

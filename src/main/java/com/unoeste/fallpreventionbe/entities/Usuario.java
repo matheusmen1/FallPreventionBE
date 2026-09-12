@@ -1,6 +1,9 @@
 package com.unoeste.fallpreventionbe.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -27,6 +30,11 @@ public class Usuario
     @ManyToOne
     @JoinColumn(name = "usr_responsavel_id")
     private Usuario responsavel;
+
+    @ManyToMany(mappedBy = "sessaoMonitoresAutorizados")
+    @JsonIgnore
+    private List<Sessao> sessoesAutorizadas;
+
     public Usuario()
     {
         this(0L, "", "", "", "", "", "" , 0, null);
@@ -114,5 +122,13 @@ public class Usuario
 
     public void setNivel(Integer nivel) {
         this.nivel = nivel;
+    }
+
+    public List<Sessao> getSessoesAutorizadas() {
+        return sessoesAutorizadas;
+    }
+
+    public void setSessoesAutorizadas(List<Sessao> sessoesAutorizadas) {
+        this.sessoesAutorizadas = sessoesAutorizadas;
     }
 }
