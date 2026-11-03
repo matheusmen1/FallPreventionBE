@@ -23,8 +23,10 @@ public class Exercicio
     private String url_video;
     @Column(name = "exe_url_foto")
     private String url_foto;
+    @Column(name = "exe_dificuldade")
+    private Integer dificuldade;
 
-    public Exercicio(Long id, String nome, String descricao, TipoExercicio tipo_exercicio, String codigo_nome, String url_video, String url_foto) {
+    public Exercicio(Long id, String nome, String descricao, TipoExercicio tipo_exercicio, String codigo_nome, String url_video, String url_foto, Integer dificuldade) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
@@ -32,10 +34,15 @@ public class Exercicio
         this.codigo_nome = codigo_nome;
         this.url_video = url_video;
         this.url_foto = url_foto;
+        this.dificuldade = dificuldade;
+    }
+
+    public Exercicio(Long id, String nome, String descricao, TipoExercicio tipo_exercicio, String codigo_nome, String url_video, String url_foto) {
+        this(id, nome, descricao, tipo_exercicio, codigo_nome, url_video, url_foto, 1);
     }
 
     public Exercicio() {
-        this(0L, "", "",null, "", "", "");
+        this(null, "", "", null, "", "", "", 1);
     }
 
     public Long getId() {
@@ -92,5 +99,13 @@ public class Exercicio
 
     public void setUrl_foto(String url_foto) {
         this.url_foto = url_foto;
+    }
+
+    public Integer getDificuldade() {
+        return dificuldade;
+    }
+
+    public void setDificuldade(Integer dificuldade) {
+        this.dificuldade = dificuldade;
     }
 }

@@ -26,11 +26,13 @@ public class Paciente
     private String tipo_pessoa;
     @Column(name = "pac_observacao")
     private String observacao;
+    @Column(name = "pac_pontuacao")
+    private Integer pontuacao;
     @ManyToOne
     @JoinColumn(name = "doe_id")
     private Doenca doenca;
 
-    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf, String tipo_pessoa, Doenca doenca, String observacao) {
+    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf, String tipo_pessoa, Doenca doenca, String observacao, Integer pontuacao) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -40,11 +42,18 @@ public class Paciente
         this.tipo_pessoa = tipo_pessoa;
         this.doenca = doenca;
         this.observacao = observacao;
+        this.pontuacao = pontuacao;
     }
+
+    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf, String tipo_pessoa, Doenca doenca, String observacao) {
+        this(id, nome, email, data_nascimento, telefone, cpf, tipo_pessoa, doenca, observacao, 16);
+    }
+
     public Paciente()
     {
-        this(0L, "", "", null, "", "", "", null, "");
+        this(null, "", "", null, "", "", "", null, "", 16);
     }
+
     public Long getId() {
         return id;
     }
@@ -115,5 +124,13 @@ public class Paciente
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public Integer getPontuacao() {
+        return pontuacao;
+    }
+
+    public void setPontuacao(Integer pontuacao) {
+        this.pontuacao = pontuacao;
     }
 }

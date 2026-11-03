@@ -46,6 +46,18 @@ public class ExercicioRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhum Exercício Encontrado"));
     }
+    @GetMapping("/getAllByPontuacao/{pontuacao}")
+    public ResponseEntity<Object> getAllByPontuacao(@PathVariable("pontuacao") Integer pontuacao)
+    {
+        List<Exercicio> exercicios = exercicioService.getAllByPontuacao(pontuacao);
+        return ResponseEntity.ok(exercicios);
+    }
+    @GetMapping("/getAllByPontuacaoAndTipo/{pontuacao}/{tpeId}")
+    public ResponseEntity<Object> getAllByPontuacaoAndTipo(@PathVariable("pontuacao") Integer pontuacao, @PathVariable("tpeId") Long tpeId)
+    {
+        List<Exercicio> exercicios = exercicioService.getAllByPontuacaoAndTipo(pontuacao, tpeId);
+        return ResponseEntity.ok(exercicios);
+    }
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> add(@RequestPart Exercicio exercicio, @RequestPart(value = "video", required = false) MultipartFile video, @RequestPart(value = "foto", required = false) MultipartFile foto)
     {

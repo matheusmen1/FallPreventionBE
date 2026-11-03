@@ -63,6 +63,8 @@ public class PacienteService
             {
                 paciente.setTipo_pessoa("Indefinido");
             }
+            if (paciente.getPontuacao() == null || paciente.getPontuacao() < 16)
+                paciente.setPontuacao(16);
             return pacienteRepository.save(paciente);
 
         }catch (Exception e)
