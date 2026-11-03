@@ -48,7 +48,7 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO resultado_sessao (res_duracao, res_observacao, ses_id) VALUES (:duracao, :observacao, :id)", nativeQuery = true)
+    @Query(value = "INSERT INTO resultado_sessao (res_data_hora_inicio, res_duracao_total_minutos, res_observacao, ses_id) VALUES (NOW(), :duracao, :observacao, :id)", nativeQuery = true)
     public void addResultadoSessao(Integer duracao, String observacao, Long id);
 
     @Query(value = "SELECT * FROM sessao WHERE usr_id = :id ", nativeQuery = true)
@@ -82,6 +82,9 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
 
     @Query(value = "SELECT sessao_observacao.* FROM sessao_observacao INNER JOIN sessao ON sessao.ses_id = sessao_observacao.ses_id WHERE sessao.pac_id = :idPaciente AND sessao.ses_id = :idSessao", nativeQuery = true)
     public List<SessaoObservacao> getAllObservacoesByPacienteAndSessao(@Param("idSessao") Long idSessao,@Param("idPaciente") Long idPaciente);
+
+    @Query(value = "SELECT * FROM sessao_observacao WHERE ses_id = :idSessao", nativeQuery = true)
+    public List<SessaoObservacao> getAllObservacoesBySessao(@Param("idSessao") Long idSessao);
 
     @Modifying
     @Transactional

@@ -70,13 +70,13 @@ public class SessaoWebSocketHandler extends TextWebSocketHandler
         switch (pacote.getAcao()) {
 
             case "PROXIMA_FASE":
+                sessaoService.addResultado(pacote);
                 sessaoService.proximaFaseUnity(session, pacote.getSessao_id());
                 reactWebSocketHandler.avisarReact(pacote.getAcao()+"_REACT");
                 break;
             case "HABILITAR_BOTAO_REINICIAR_INTERVENCAO":
                 reactWebSocketHandler.avisarReact(pacote.getAcao());
                 break;
-
         }
     }
 

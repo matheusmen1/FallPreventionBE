@@ -9,8 +9,10 @@ public class Pacote
     private boolean is_repeticao;
     private String mensagem;
     private Long sessao_id;
+    private String data_hora_inicio;
+    private String data_hora_fim;
 
-    public Pacote(String acao, String pacote_unity, int repeticao, float tempo, boolean is_repeticao, String mensagem, Long sessao_id) {
+    public Pacote(String acao, String pacote_unity, int repeticao, float tempo, boolean is_repeticao, String mensagem, Long sessao_id, String data_hora_inicio, String data_hora_fim) {
         this.acao = acao;
         this.pacote_unity = pacote_unity;
         this.repeticao = repeticao;
@@ -18,11 +20,11 @@ public class Pacote
         this.is_repeticao = is_repeticao;
         this.mensagem = mensagem;
         this.sessao_id = sessao_id;
+        this.data_hora_inicio = data_hora_inicio;
+        this.data_hora_fim = data_hora_fim;
     }
 
-    public Pacote()
-    {
-        this("", "", 0, 0f, false, "",  0L);
+    public Pacote() {
     }
 
     public String getAcao() {
@@ -79,5 +81,21 @@ public class Pacote
 
     public void setSessao_id(Long sessao_id) {
         this.sessao_id = sessao_id;
+    }
+
+    public String getData_hora_inicio() {
+        return data_hora_inicio;
+    }
+
+    public void setData_hora_inicio(String data_hora_inicio) {
+        this.data_hora_inicio = data_hora_inicio;
+    }
+
+    public String getData_hora_fim() {
+        return data_hora_fim;
+    }
+
+    public void setData_hora_fim(String data_hora_fim) {
+        this.data_hora_fim = data_hora_fim;
     }
 }

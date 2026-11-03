@@ -3,6 +3,8 @@ package com.unoeste.fallpreventionbe.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "resultado_sessao")
 public class ResultadoSessao
@@ -12,26 +14,45 @@ public class ResultadoSessao
     @Column(name = "res_id")
     private Long id;
 
-    @JsonIgnore
-    @OneToOne
-    @JoinColumn(name = "ses_id")
-    private Sessao sessao;
+    @Column(name = "res_data_hora_inicio", nullable = false)
+    private LocalDateTime dataHoraInicio;
 
-    @Column(name = "res_duracao")
-    private Integer duracao;
-    @Column(name = "res_observacao")
+    @Column(name = "res_data_hora_fim")
+    private LocalDateTime dataHoraFim;
+
+    @Column(name = "res_duracao_total_minutos")
+    private Integer duracaoTotalMinutos;
+
+    @Column(name = "res_observacao", columnDefinition = "TEXT")
     private String observacao;
 
-    public ResultadoSessao(Long id, Sessao sessao, Integer duracao, String observacao) {
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "ses_id", nullable = false, unique = true)
+    private Sessao sessao;
+
+    public ResultadoSessao(
+            Long id,
+            LocalDateTime dataHoraInicio,
+            LocalDateTime dataHoraFim,
+            Integer duracaoTotalMinutos,
+            String observacao,
+            Sessao sessao
+    ) {
         this.id = id;
-        this.sessao = sessao;
-        this.duracao = duracao;
+        this.dataHoraInicio = dataHoraInicio;
+        this.dataHoraFim = dataHoraFim;
+        this.duracaoTotalMinutos = duracaoTotalMinutos;
         this.observacao = observacao;
+        this.sessao = sessao;
     }
 
-    public ResultadoSessao()
-    {
-        this(0L, null, 0, "");
+    public ResultadoSessao(Long id, Sessao sessao, Integer duracao, String observacao) {
+        this(id, LocalDateTime.now(), LocalDateTime.now(), duracao, observacao, sessao);
+    }
+
+    public ResultadoSessao() {
+        this(null, LocalDateTime.now(), null, 0, "", null);
     }
 
     public Long getId() {
@@ -42,20 +63,36 @@ public class ResultadoSessao
         this.id = id;
     }
 
-    public Sessao getSessao() {
-        return sessao;
+    public LocalDateTime getDataHoraInicio() {
+        return dataHoraInicio;
     }
 
-    public void setSessao(Sessao sessao) {
-        this.sessao = sessao;
+    public void setDataHoraInicio(LocalDateTime dataHoraInicio) {
+        this.dataHoraInicio = dataHoraInicio;
+    }
+
+    public LocalDateTime getDataHoraFim() {
+        return dataHoraFim;
+    }
+
+    public void setDataHoraFim(LocalDateTime dataHoraFim) {
+        this.dataHoraFim = dataHoraFim;
+    }
+
+    public Integer getDuracaoTotalMinutos() {
+        return duracaoTotalMinutos;
+    }
+
+    public void setDuracaoTotalMinutos(Integer duracaoTotalMinutos) {
+        this.duracaoTotalMinutos = duracaoTotalMinutos;
     }
 
     public Integer getDuracao() {
-        return duracao;
+        return duracaoTotalMinutos;
     }
 
     public void setDuracao(Integer duracao) {
-        this.duracao = duracao;
+        this.duracaoTotalMinutos = duracao;
     }
 
     public String getObservacao() {
@@ -64,5 +101,13 @@ public class ResultadoSessao
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public Sessao getSessao() {
+        return sessao;
+    }
+
+    public void setSessao(Sessao sessao) {
+        this.sessao = sessao;
     }
 }

@@ -1,8 +1,11 @@
 package com.unoeste.fallpreventionbe.services;
 
 import com.unoeste.fallpreventionbe.entities.*;
+import com.unoeste.fallpreventionbe.repositories.ResultadoSessaoFaseRepository;
+import com.unoeste.fallpreventionbe.repositories.ResultadoSessaoRepository;
 import com.unoeste.fallpreventionbe.repositories.SessaoRepository;
 import com.unoeste.fallpreventionbe.repositories.UsuarioRepository;
+import com.unoeste.fallpreventionbe.webSocket.ReactWebSocketHandler;
 import com.unoeste.fallpreventionbe.webSocket.SessaoWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -19,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,6 +36,12 @@ public class SessaoService
     private UsuarioRepository usuarioRepository;
     @Autowired
     private SessaoWebSocketHandler webSocketHandler;
+    @Autowired
+    private ResultadoSessaoRepository resultadoSessaoRepository;
+    @Autowired
+    private ResultadoSessaoFaseRepository resultadoSessaoFaseRepository;
+    @Autowired
+    private ReactWebSocketHandler reactWebSocketHandler;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Sessao save(Sessao sessao)
@@ -55,7 +65,15 @@ public class SessaoService
             sessao.setResultadoSessao(null);
             sessao.setSessaoMonitoresAutorizados(null);
 
+            SessaoObservacao sessaoObservacao = new SessaoObservacao();
+            sessaoObservacao.setSessao(sessao);
+            sessaoObservacao.setData_hora(LocalDateTime.now());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
+            sessaoObservacao.setObservacao(sessaoObservacao.getData_hora().format(formatter)+ " (Criação)"+": "+sessao.getObservacao());
+
             Sessao novaSessao = sessaoRepository.save(sessao);
+
+            sessaoRepository.addObservacaoSemFase(sessaoObservacao.getObservacao(), sessaoObservacao.getData_hora(), sessao.getId());
 
 
             for (Usuario usuario : monitoresAutorizados)
@@ -598,17 +616,19 @@ public class SessaoService
                     pacote.setPacote_unity(exercicio.getCodigo_nome());
                     String json = objectMapper.writeValueAsString(pacote);
                     session.sendMessage(new TextMessage(json));
+                    
                     sessaoRepository.save(sessao);
                 }
                 else
                 {
+                    reactWebSocketHandler.avisarReact("FINALIZAR_SESSAO_REACT");
+
                     Pacote pacote = new Pacote();
                     pacote.setAcao("FINALIZAR_SESSAO");
                     pacote.setPacote_unity("com.unoeste.lobby");
                     String json = objectMapper.writeValueAsString(pacote);
                     session.sendMessage(new TextMessage(json));
-                    // finalizar depois
-
+                    
                 }
             }
 
@@ -630,5 +650,49 @@ public class SessaoService
     public List<Sessao> getAllSessoesAutorizadasByMonitor(Long id, String status)
     {
         return sessaoRepository.getAllSessoesAutorizadasByMonitor(id, status);
+    }
+
+    @Transactional
+    public void addResultado(Pacote pacote)
+    {
+        Sessao sessao = sessaoRepository.findById(pacote.getSessao_id()).orElse(null);
+        if (sessao != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime inicio = LocalDateTime.parse(pacote.getData_hora_inicio(), formatter);
+            LocalDateTime fim = LocalDateTime.parse(pacote.getData_hora_fim(), formatter);
+
+            ResultadoSessao resultadoSessao = resultadoSessaoRepository.findBySessaoId(sessao.getId()).orElse(null);
+            if (resultadoSessao == null) {
+                resultadoSessao = new ResultadoSessao();
+                resultadoSessao.setSessao(sessao);
+                resultadoSessao.setDataHoraInicio(inicio);
+            } else if (sessao.getOrdemAtual() == 1) {
+                resultadoSessao.setDataHoraInicio(inicio);
+            }
+            resultadoSessao.setDataHoraFim(fim);
+            long minutos = Duration.between(resultadoSessao.getDataHoraInicio(), fim).toMinutes();
+            resultadoSessao.setDuracaoTotalMinutos((int) Math.max(1L, minutos));
+            resultadoSessaoRepository.save(resultadoSessao);
+
+            SessaoFase faseAtual = null;
+            for (SessaoFase sessaoFase : sessao.getSessaoFases()) {
+                if (sessaoFase.getOrdem() == sessao.getOrdemAtual()) {
+                    faseAtual = sessaoFase;
+                }
+            }
+
+            if (faseAtual != null) {
+                ResultadoSessaoFase resultadoSessaoFase = resultadoSessaoFaseRepository
+                        .findFirstBySessaoFase_IdOrderByIdDesc(faseAtual.getId())
+                        .orElse(new ResultadoSessaoFase());
+
+                resultadoSessaoFase.setSessaoFase(faseAtual);
+                resultadoSessaoFase.setRepeticoesRealizadas(pacote.getRepeticao());
+                resultadoSessaoFase.setTempoRealizado(pacote.getTempo());
+                resultadoSessaoFase.setDataHoraInicio(inicio);
+                resultadoSessaoFase.setDataHoraFim(fim);
+                resultadoSessaoFaseRepository.save(resultadoSessaoFase);
+            }
+        }
     }
 }
