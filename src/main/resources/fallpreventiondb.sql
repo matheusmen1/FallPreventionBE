@@ -1,169 +1,199 @@
 CREATE TABLE IF NOT EXISTS usuario(
-usr_id BIGSERIAL PRIMARY KEY,
-usr_nome VARCHAR(100) NOT NULL,
-usr_email VARCHAR(100) NOT NULL,
-usr_senha VARCHAR(100) NOT NULL,
-usr_telefone VARCHAR(100) NOT NULL,
-usr_cpf VARCHAR(100) NOT NULL,
-usr_ra VARCHAR(100) NOT NULL,
-usr_nivel INTEGER NOT NULL,
+    usr_id BIGSERIAL PRIMARY KEY,
+    usr_nome VARCHAR(100) NOT NULL,
+    usr_email VARCHAR(100) NOT NULL,
+    usr_senha VARCHAR(100) NOT NULL,
+    usr_telefone VARCHAR(100) NOT NULL,
+    usr_cpf VARCHAR(100) NOT NULL,
+    usr_ra VARCHAR(100) NOT NULL,
+    usr_nivel INTEGER NOT NULL,
+    usr_responsavel_id BIGINT,
+    CONSTRAINT fk_usuario_responsavel 
+        FOREIGN KEY (usr_responsavel_id)
+            REFERENCES usuario (usr_id)
+);
 
-usr_responsavel_id BIGINT,
-CONSTRAINT fk_usuario_responsavel 
-	FOREIGN KEY (usr_responsavel_id)
-		REFERENCES usuario (usr_id)
+CREATE TABLE IF NOT EXISTS doenca(
+    doe_id BIGSERIAL PRIMARY KEY,
+    doe_nome VARCHAR(100) NOT NULL,
+    doe_descricao VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS paciente(
-pac_id BIGSERIAL PRIMARY KEY,
-pac_nome VARCHAR(100) NOT NULL,
-pac_email VARCHAR(100) NOT NULL,
-pac_data_nascimento DATE NOT NULL,
-pac_telefone VARCHAR(100) NOT NULL,
-pac_cpf VARCHAR(100) NOT NULL,
-pac_tipo_pessoa VARCHAR(100) NOT NULL,
-pac_observacao VARCHAR(100),
-doe_id BIGINT,
-CONSTRAINT fk_paciente_doenca
-    FOREIGN KEY (doe_id)
-        REFERENCES doenca (doe_id)
+    pac_id BIGSERIAL PRIMARY KEY,
+    pac_nome VARCHAR(100) NOT NULL,
+    pac_email VARCHAR(100) NOT NULL,
+    pac_data_nascimento DATE NOT NULL,
+    pac_telefone VARCHAR(100) NOT NULL,
+    pac_cpf VARCHAR(100) NOT NULL,
+    pac_tipo_pessoa VARCHAR(100) NOT NULL,
+    pac_observacao VARCHAR(100),
+    pac_pontuacao INTEGER DEFAULT 16,
+    doe_id BIGINT,
+    CONSTRAINT fk_paciente_doenca
+        FOREIGN KEY (doe_id)
+            REFERENCES doenca (doe_id)
 );
 
 CREATE TABLE IF NOT EXISTS ficha_avaliacao(
-pre_id BIGSERIAL PRIMARY KEY,
-pre_data_avaliacao TIMESTAMP NOT NULL,
-usr_id BIGINT NOT NULL,
-pac_id BIGINT NOT NULL,
-CONSTRAINT fk_usuario_ficha_avaliacao
-	FOREIGN KEY (usr_id)
-		REFERENCES usuario (usr_id),
-CONSTRAINT fk_paciente_ficha_avaliacao
-	FOREIGN KEY (pac_id)
-		REFERENCES paciente (pac_id)
+    pre_id BIGSERIAL PRIMARY KEY,
+    pre_data_avaliacao TIMESTAMP NOT NULL,
+    usr_id BIGINT NOT NULL,
+    pac_id BIGINT NOT NULL,
+    CONSTRAINT fk_usuario_ficha_avaliacao
+        FOREIGN KEY (usr_id)
+            REFERENCES usuario (usr_id),
+    CONSTRAINT fk_paciente_ficha_avaliacao
+        FOREIGN KEY (pac_id)
+            REFERENCES paciente (pac_id)
 );
 
 CREATE TABLE IF NOT EXISTS metrica(
-met_id BIGSERIAL PRIMARY KEY,
-met_nome_teste VARCHAR(100) NOT NULL,
-met_pontuacao INTEGER NOT NULL,
-pre_id BIGINT NOT NULL,
-CONSTRAINT fk_paciente_metrica
-	FOREIGN KEY (pre_id)
-		REFERENCES ficha_avaliacao (pre_id)
-
+    met_id BIGSERIAL PRIMARY KEY,
+    met_nome_teste VARCHAR(100) NOT NULL,
+    met_pontuacao INTEGER NOT NULL,
+    pre_id BIGINT NOT NULL,
+    CONSTRAINT fk_paciente_metrica
+        FOREIGN KEY (pre_id)
+            REFERENCES ficha_avaliacao (pre_id)
 );
+
 CREATE TABLE IF NOT EXISTS tipo_exercicio(
-tpe_id BIGSERIAL PRIMARY KEY,
-tpe_nome VARCHAR(100) NOT NULL
+    tpe_id BIGSERIAL PRIMARY KEY,
+    tpe_nome VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS exercicio(
-exe_id BIGSERIAL PRIMARY KEY,
-exe_nome VARCHAR(100) NOT NULL,
-exe_descricao VARCHAR(200) NOT NULL,
-exe_codigo_nome VARCHAR(100) NOT NULL,
-exe_url_video VARCHAR(500),
-exe_url_foto VARCHAR(500),
-tpe_id BIGINT NOT NULL,
-CONSTRAINT fk_tipo_exercicio_exercicio
-	FOREIGN KEY (tpe_id)
-		REFERENCES tipo_exercicio (tpe_id)
+    exe_id BIGSERIAL PRIMARY KEY,
+    exe_nome VARCHAR(100) NOT NULL,
+    exe_descricao VARCHAR(200) NOT NULL,
+    exe_codigo_nome VARCHAR(100) NOT NULL,
+    exe_url_video VARCHAR(500),
+    exe_url_foto VARCHAR(500),
+    exe_dificuldade INTEGER DEFAULT 1,
+    tpe_id BIGINT NOT NULL,
+    CONSTRAINT fk_tipo_exercicio_exercicio
+        FOREIGN KEY (tpe_id)
+            REFERENCES tipo_exercicio (tpe_id)
 );
 
 CREATE TABLE IF NOT EXISTS sessao(
-ses_id BIGSERIAL PRIMARY KEY,
-ses_data_hora TIMESTAMP NOT NULL,
-ses_ordem_atual INTEGER,
-usr_id BIGINT NOT NULL,
-pac_id BIGINT NOT NULL,
-ses_status VARCHAR(100) NOT NULL,
-ses_observacao VARCHAR(100) NULL,
-CONSTRAINT fk_usuario_sessao
-	FOREIGN KEY (usr_id)
-		REFERENCES usuario (usr_id),
-CONSTRAINT fk_paciente_sessao
-	FOREIGN KEY (pac_id)
-		REFERENCES paciente (pac_id)
+    ses_id BIGSERIAL PRIMARY KEY,
+    ses_data_hora TIMESTAMP NOT NULL,
+    ses_ordem_atual INTEGER,
+    usr_id BIGINT NOT NULL,
+    pac_id BIGINT NOT NULL,
+    ses_status VARCHAR(100) NOT NULL,
+    ses_observacao VARCHAR(100) NULL,
+    CONSTRAINT fk_usuario_sessao
+        FOREIGN KEY (usr_id)
+            REFERENCES usuario (usr_id),
+    CONSTRAINT fk_paciente_sessao
+        FOREIGN KEY (pac_id)
+            REFERENCES paciente (pac_id)
 );
 
 CREATE TABLE IF NOT EXISTS sessao_fase(
-sesf_id BIGSERIAL PRIMARY KEY,
-sesf_ordem INTEGER NOT NULL,
-sesf_repeticao INTEGER,
-sesf_tempo FLOAT,
-sesf_is_repeticao BOOLEAN NOT NULL,
-ses_id BIGINT NOT NULL,
-exe_id BIGINT NOT NULL,
-CONSTRAINT fk_sessao_sessao_fase
-	FOREIGN KEY (ses_id)
-		REFERENCES sessao (ses_id),
-CONSTRAINT fk_exercicio_sessao_fase
-	FOREIGN KEY (exe_id)
-		REFERENCES exercicio (exe_id)
+    sesf_id BIGSERIAL PRIMARY KEY,
+    sesf_ordem INTEGER NOT NULL,
+    sesf_repeticao INTEGER,
+    sesf_tempo FLOAT,
+    sesf_is_repeticao BOOLEAN NOT NULL,
+    ses_id BIGINT NOT NULL,
+    exe_id BIGINT NOT NULL,
+    CONSTRAINT fk_sessao_sessao_fase
+        FOREIGN KEY (ses_id)
+            REFERENCES sessao (ses_id),
+    CONSTRAINT fk_exercicio_sessao_fase
+        FOREIGN KEY (exe_id)
+            REFERENCES exercicio (exe_id)
 );
+
 CREATE TABLE IF NOT EXISTS sessao_gravacao(
     sesg_id BIGSERIAL PRIMARY KEY,
     sesg_caminho_arquivo VARCHAR(255) NOT NULL,
     sesg_data_hora TIMESTAMP NOT NULL,
     ses_id BIGINT NOT NULL,
-CONSTRAINT fk_sessao_sessao_gravacao
-    FOREIGN KEY (ses_id)
-        REFERENCES sessao (ses_id)
+    CONSTRAINT fk_sessao_sessao_gravacao
+        FOREIGN KEY (ses_id)
+            REFERENCES sessao (ses_id)
 );
+
 CREATE TABLE IF NOT EXISTS sessao_observacao(
     seso_id BIGSERIAL PRIMARY KEY,
     seso_observacao VARCHAR(500) NOT NULL,
     seso_data_hora TIMESTAMP NOT NULL,
     sesf_id BIGINT NULL,
     ses_id BIGINT NOT NULL,
-CONSTRAINT fk_sessao_sessao_observacao
-    FOREIGN KEY (ses_id)
-        REFERENCES sessao (ses_id),
-CONSTRAINT fk_sessao_fase_sessao_observacao
-    FOREIGN KEY (sesf_id)
-        REFERENCES sessao_fase (sesf_id)
+    CONSTRAINT fk_sessao_sessao_observacao
+        FOREIGN KEY (ses_id)
+            REFERENCES sessao (ses_id),
+    CONSTRAINT fk_sessao_fase_sessao_observacao
+        FOREIGN KEY (sesf_id)
+            REFERENCES sessao_fase (sesf_id)
 );
+
 CREATE TABLE IF NOT EXISTS resultado_sessao(
-res_id BIGSERIAL PRIMARY KEY,
-res_duracao INTEGER NOT NULL,
-res_observacao VARCHAR(100),
-ses_id BIGINT NOT NULL,
-CONSTRAINT fk_sessao_resultado_sessao
-	FOREIGN KEY (ses_id)
-		REFERENCES sessao (ses_id)
+    res_id BIGSERIAL PRIMARY KEY,
+    res_data_hora_inicio TIMESTAMP NOT NULL,
+    res_data_hora_fim TIMESTAMP,
+    res_duracao_total_minutos INTEGER,
+    res_observacao TEXT,
+    ses_id BIGINT NOT NULL UNIQUE,
+    CONSTRAINT fk_sessao_resultado_sessao
+        FOREIGN KEY (ses_id)
+            REFERENCES sessao (ses_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS resultado_sessao_fase(
+    resf_id BIGSERIAL PRIMARY KEY,
+    resf_repeticoes_realizadas INTEGER,
+    resf_tempo_realizado FLOAT,
+    resf_data_hora_inicio TIMESTAMP NOT NULL,
+    resf_data_hora_fim TIMESTAMP,
+    sesf_id BIGINT NOT NULL,
+    CONSTRAINT fk_sessao_fase_resultado_sessao_fase
+        FOREIGN KEY (sesf_id)
+            REFERENCES sessao_fase (sesf_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS resultado_sessao_fase_escala(
+    rse_id BIGSERIAL PRIMARY KEY,
+    rse_nome_escala VARCHAR(100) NOT NULL,
+    rse_item_avaliado VARCHAR(100),
+    rse_pontuacao INTEGER NOT NULL,
+    rse_justificativa TEXT,
+    resf_id BIGINT NOT NULL UNIQUE,
+    CONSTRAINT fk_resultado_sessao_fase_escala
+        FOREIGN KEY (resf_id)
+            REFERENCES resultado_sessao_fase (resf_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS aprovacao_sessao(
-apr_id BIGSERIAL PRIMARY KEY,
-apr_data_hora TIMESTAMP NOT NULL,
-apr_motivo VARCHAR(500),
-apr_status VARCHAR(100) NOT NULL,
-ses_id BIGINT NOT NULL,
-usr_id BIGINT NOT NULL,
-CONSTRAINT fk_sessao_aprovacao_sessao
-	FOREIGN KEY (ses_id)
-		REFERENCES sessao (ses_id),
-CONSTRAINT fk_usuario_aprovacao_sessao
-	FOREIGN KEY (usr_id)
-		REFERENCES usuario (usr_id)
-);
-
-CREATE TABLE IF NOT EXISTS doenca(
-doe_id BIGSERIAL PRIMARY KEY,
-doe_nome VARCHAR(100) NOT NULL,
-doe_descricao VARCHAR(100)
+    apr_id BIGSERIAL PRIMARY KEY,
+    apr_data_hora TIMESTAMP NOT NULL,
+    apr_motivo VARCHAR(500),
+    apr_status VARCHAR(100) NOT NULL,
+    ses_id BIGINT NOT NULL,
+    usr_id BIGINT NOT NULL,
+    CONSTRAINT fk_sessao_aprovacao_sessao
+        FOREIGN KEY (ses_id)
+            REFERENCES sessao (ses_id),
+    CONSTRAINT fk_usuario_aprovacao_sessao
+        FOREIGN KEY (usr_id)
+            REFERENCES usuario (usr_id)
 );
 
 CREATE TABLE IF NOT EXISTS sessao_monitores_autorizados(
-sesm_id BIGSERIAL PRIMARY KEY,
-ses_id BIGINT NOT NULL,
-usr_id BIGINT NOT NULL,
-CONSTRAINT fk_sessao_monitores_autorizados_sessao
-    FOREIGN KEY (ses_id)
-        REFERENCES sessao(ses_id),
-CONSTRAINT fk_sessao_monitores_autorizados_usuario
-    FOREIGN KEY (usr_id)
-        REFERENCES usuario (usr_id)
-CONSTRAINT uk_sessao_monitor
-    UNIQUE (ses_id, usr_id)
+    sesm_id BIGSERIAL PRIMARY KEY,
+    ses_id BIGINT NOT NULL,
+    usr_id BIGINT NOT NULL,
+    CONSTRAINT fk_sessao_monitores_autorizados_sessao
+        FOREIGN KEY (ses_id)
+            REFERENCES sessao(ses_id),
+    CONSTRAINT fk_sessao_monitores_autorizados_usuario
+        FOREIGN KEY (usr_id)
+            REFERENCES usuario (usr_id),
+    CONSTRAINT uk_sessao_monitor
+        UNIQUE (ses_id, usr_id)
 );
