@@ -20,23 +20,9 @@ public class ExercicioService
 
     @Autowired
     private ExercicioRepository exercicioRepository;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     private final String DIRETORIO_UPLOADS_VIDEOS = "uploads/videos_exercicios/";
     private final String DIRETORIO_UPLOADS_FOTOS = "uploads/fotos_exercicios/";
-
-    @PostConstruct
-    public void inicializarColunasBanco() {
-        try {
-            jdbcTemplate.execute("ALTER TABLE paciente ADD COLUMN IF NOT EXISTS pac_pontuacao INTEGER DEFAULT 16");
-            jdbcTemplate.execute("UPDATE paciente SET pac_pontuacao = 16 WHERE pac_pontuacao IS NULL");
-            jdbcTemplate.execute("ALTER TABLE exercicio ADD COLUMN IF NOT EXISTS exe_dificuldade INTEGER DEFAULT 1");
-            jdbcTemplate.execute("UPDATE exercicio SET exe_dificuldade = 1 WHERE exe_dificuldade IS NULL");
-        } catch (Exception e) {
-            System.err.println("Aviso ao verificar colunas pac_pontuacao / exe_dificuldade: " + e.getMessage());
-        }
-    }
 
     public List<Exercicio> getAll()
     {

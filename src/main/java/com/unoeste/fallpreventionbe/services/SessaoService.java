@@ -695,4 +695,20 @@ public class SessaoService
             }
         }
     }
+
+    public boolean recentralizar()
+    {
+        try{
+            String comandoJson = "{\"acao\": \"RECENTRALIZAR\"}";
+            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+            {
+                return true;
+            }
+            return false;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

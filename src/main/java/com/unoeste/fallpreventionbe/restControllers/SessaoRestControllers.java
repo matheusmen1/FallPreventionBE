@@ -84,6 +84,14 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Finalizar Sessao"));
     }
+    @PutMapping("/recentralizar")
+    public ResponseEntity<Object> recentralizar()
+    {
+        if (sessaoService.recentralizar())
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(new Erro("Erro ao Recentralizar"));
+    }
     @GetMapping
     public ResponseEntity<Object> getAll()
     {
