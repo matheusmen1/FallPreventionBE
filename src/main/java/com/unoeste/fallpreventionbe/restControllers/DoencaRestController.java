@@ -51,7 +51,7 @@ public class DoencaRestController
     {
         Doenca novaDoenca = doencaService.save(doenca);
         if (novaDoenca != null)
-            return ResponseEntity.ok().body(doenca);
+            return ResponseEntity.ok().body(novaDoenca);
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Cadastrar Doença"));
     }
@@ -60,7 +60,7 @@ public class DoencaRestController
     {
         Doenca novaDoenca =  doencaService.save(doenca);
         if (novaDoenca != null)
-            return ResponseEntity.ok().body(doenca);
+            return ResponseEntity.ok().body(novaDoenca);
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Alterar Doença"));
     }

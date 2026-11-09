@@ -29,33 +29,11 @@ CREATE TABLE IF NOT EXISTS paciente(
     pac_tipo_pessoa VARCHAR(100) NOT NULL,
     pac_observacao VARCHAR(100),
     pac_pontuacao INTEGER DEFAULT 16,
+    pac_sexo VARCHAR(100) NOT NULL,
     doe_id BIGINT,
     CONSTRAINT fk_paciente_doenca
         FOREIGN KEY (doe_id)
             REFERENCES doenca (doe_id)
-);
-
-CREATE TABLE IF NOT EXISTS ficha_avaliacao(
-    pre_id BIGSERIAL PRIMARY KEY,
-    pre_data_avaliacao TIMESTAMP NOT NULL,
-    usr_id BIGINT NOT NULL,
-    pac_id BIGINT NOT NULL,
-    CONSTRAINT fk_usuario_ficha_avaliacao
-        FOREIGN KEY (usr_id)
-            REFERENCES usuario (usr_id),
-    CONSTRAINT fk_paciente_ficha_avaliacao
-        FOREIGN KEY (pac_id)
-            REFERENCES paciente (pac_id)
-);
-
-CREATE TABLE IF NOT EXISTS metrica(
-    met_id BIGSERIAL PRIMARY KEY,
-    met_nome_teste VARCHAR(100) NOT NULL,
-    met_pontuacao INTEGER NOT NULL,
-    pre_id BIGINT NOT NULL,
-    CONSTRAINT fk_paciente_metrica
-        FOREIGN KEY (pre_id)
-            REFERENCES ficha_avaliacao (pre_id)
 );
 
 CREATE TABLE IF NOT EXISTS tipo_exercicio(
@@ -140,9 +118,13 @@ CREATE TABLE IF NOT EXISTS resultado_sessao(
     res_duracao_total_minutos INTEGER,
     res_observacao TEXT,
     ses_id BIGINT NOT NULL UNIQUE,
+    usr_id BIGINT,
     CONSTRAINT fk_sessao_resultado_sessao
         FOREIGN KEY (ses_id)
-            REFERENCES sessao (ses_id) ON DELETE CASCADE
+            REFERENCES sessao (ses_id) ON DELETE CASCADE,
+    CONSTRAINT fk_usuario_resultado_sessao
+        FOREIGN KEY (usr_id)
+            REFERENCES usuario (usr_id)
 );
 
 CREATE TABLE IF NOT EXISTS resultado_sessao_fase(

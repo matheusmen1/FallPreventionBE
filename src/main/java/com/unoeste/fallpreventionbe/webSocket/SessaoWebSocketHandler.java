@@ -68,7 +68,11 @@ public class SessaoWebSocketHandler extends TextWebSocketHandler
         Pacote pacote = objectMapper.readValue(payload, Pacote.class);
 
         switch (pacote.getAcao()) {
-
+            case "FINALIZAR_SESSAO_UNITY":
+                sessaoService.addResultado(pacote);
+                sessaoService.finalizarSessaoUnity(session, pacote.getSessao_id());
+                reactWebSocketHandler.avisarReact("FINALIZAR_SESSAO_REACT");
+                break;
             case "PROXIMA_FASE":
                 sessaoService.addResultado(pacote);
                 sessaoService.proximaFaseUnity(session, pacote.getSessao_id());

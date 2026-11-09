@@ -7,17 +7,19 @@ public class Pacote
     private int repeticao;
     private float tempo;
     private boolean is_repeticao;
+    private String sexo;
     private String mensagem;
     private Long sessao_id;
     private String data_hora_inicio;
     private String data_hora_fim;
 
-    public Pacote(String acao, String pacote_unity, int repeticao, float tempo, boolean is_repeticao, String mensagem, Long sessao_id, String data_hora_inicio, String data_hora_fim) {
+    public Pacote(String acao, String pacote_unity, int repeticao, float tempo, boolean is_repeticao, String sexo, String mensagem, Long sessao_id, String data_hora_inicio, String data_hora_fim) {
         this.acao = acao;
         this.pacote_unity = pacote_unity;
         this.repeticao = repeticao;
         this.tempo = tempo;
         this.is_repeticao = is_repeticao;
+        this.sexo = sexo;
         this.mensagem = mensagem;
         this.sessao_id = sessao_id;
         this.data_hora_inicio = data_hora_inicio;
@@ -25,6 +27,14 @@ public class Pacote
     }
 
     public Pacote() {
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
     }
 
     public String getAcao() {

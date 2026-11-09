@@ -53,7 +53,12 @@ public class UsuarioService
                         return null;
                 }
             }
-
+            if (usuario.getId() != null)
+            {
+                Usuario aux = usuarioRepository.getUsuarioByEmailOrCpf(usuario.getEmail(), usuario.getCpf());
+                if (aux != null && !aux.getId().equals(usuario.getId()))
+                    return null;
+            }
             return usuarioRepository.save(usuario);
 
         }catch (Exception e)
@@ -68,8 +73,25 @@ public class UsuarioService
             Usuario aux = usuarioRepository.findById(id).orElse(null);
             if (aux != null)
             {
-                usuarioRepository.delete(aux);
-                return true;
+                // preciso verificar, se há ao menos um usu adm.
+                boolean flag = true;
+                if (aux.getNivel() > 1) // se corresponde ao do adm, preciso verificar se há ao menos um outro, sem ser ele
+                {
+                    flag = false;
+                    List<Usuario> usuarios = usuarioRepository.findAll();
+
+                    for (int i = 0; i < usuarios.size() && !flag; i++)
+                    {
+                        if (usuarios.get(i) != aux && usuarios.get(i).getNivel() > 1) // 0 - Monitor 1 - Fisio 2 - Adm
+                            flag = true;
+                    }
+                }
+                if (flag)
+                {
+                    usuarioRepository.delete(aux);
+                    return true;
+                }
+                return false;
             }
             else
                 return false;

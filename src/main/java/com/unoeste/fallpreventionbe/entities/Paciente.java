@@ -28,11 +28,13 @@ public class Paciente
     private String observacao;
     @Column(name = "pac_pontuacao")
     private Integer pontuacao;
+    @Column(name = "pac_sexo")
+    private String sexo;
     @ManyToOne
     @JoinColumn(name = "doe_id")
     private Doenca doenca;
 
-    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf, String tipo_pessoa, Doenca doenca, String observacao, Integer pontuacao) {
+    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf, String tipo_pessoa, Doenca doenca, String observacao, Integer pontuacao, String sexo) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -43,15 +45,16 @@ public class Paciente
         this.doenca = doenca;
         this.observacao = observacao;
         this.pontuacao = pontuacao;
+        this.sexo = sexo;
     }
 
-    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf, String tipo_pessoa, Doenca doenca, String observacao) {
-        this(id, nome, email, data_nascimento, telefone, cpf, tipo_pessoa, doenca, observacao, 16);
+    public Paciente(Long id, String nome, String email, LocalDate data_nascimento, String telefone, String cpf, String tipo_pessoa, Doenca doenca, String observacao, String sexo) {
+        this(id, nome, email, data_nascimento, telefone, cpf, tipo_pessoa, doenca, observacao, 16, sexo);
     }
 
     public Paciente()
     {
-        this(null, "", "", null, "", "", "", null, "", 16);
+        this(null, "", "", null, "", "", "", null, "", 16, "");
     }
 
     public Long getId() {
@@ -132,5 +135,13 @@ public class Paciente
 
     public void setPontuacao(Integer pontuacao) {
         this.pontuacao = pontuacao;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
     }
 }

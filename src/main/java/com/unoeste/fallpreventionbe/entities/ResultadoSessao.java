@@ -31,13 +31,18 @@ public class ResultadoSessao
     @JoinColumn(name = "ses_id", nullable = false, unique = true)
     private Sessao sessao;
 
+    @ManyToOne
+    @JoinColumn(name = "usr_id")
+    private Usuario usuarioExecutor;
+
     public ResultadoSessao(
             Long id,
             LocalDateTime dataHoraInicio,
             LocalDateTime dataHoraFim,
             Integer duracaoTotalMinutos,
             String observacao,
-            Sessao sessao
+            Sessao sessao,
+            Usuario usuarioExecutor
     ) {
         this.id = id;
         this.dataHoraInicio = dataHoraInicio;
@@ -45,14 +50,15 @@ public class ResultadoSessao
         this.duracaoTotalMinutos = duracaoTotalMinutos;
         this.observacao = observacao;
         this.sessao = sessao;
+        this.usuarioExecutor = usuarioExecutor;
     }
 
     public ResultadoSessao(Long id, Sessao sessao, Integer duracao, String observacao) {
-        this(id, LocalDateTime.now(), LocalDateTime.now(), duracao, observacao, sessao);
+        this(id, LocalDateTime.now(), LocalDateTime.now(), duracao, observacao, sessao, null);
     }
 
     public ResultadoSessao() {
-        this(null, LocalDateTime.now(), null, 0, "", null);
+        this(null, LocalDateTime.now(), null, 0, "", null, null);
     }
 
     public Long getId() {
@@ -109,5 +115,13 @@ public class ResultadoSessao
 
     public void setSessao(Sessao sessao) {
         this.sessao = sessao;
+    }
+
+    public Usuario getUsuarioExecutor() {
+        return usuarioExecutor;
+    }
+
+    public void setUsuarioExecutor(Usuario usuarioExecutor) {
+        this.usuarioExecutor = usuarioExecutor;
     }
 }

@@ -18,7 +18,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>
     @Query(value = "SELECT * FROM usuario WHERE usr_responsavel_id = :id", nativeQuery = true)
     public List<Usuario> getMonitoresByResponsavel(Long id);
 
-    @Query(value = "SELECT * FROM usuario WHERE usr_nivel = 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM usuario WHERE usr_nivel >= 1", nativeQuery = true)
     public List<Usuario> getAllFisioterapeutas();
 
     @Query(value = "SELECT usuario.* FROM usuario INNER JOIN sessao_monitores_autorizados ON sessao_monitores_autorizados.usr_id = usuario.usr_id WHERE sessao_monitores_autorizados.ses_id =:id", nativeQuery = true)

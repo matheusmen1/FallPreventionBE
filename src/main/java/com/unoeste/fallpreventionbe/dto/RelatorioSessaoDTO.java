@@ -10,6 +10,7 @@ public class RelatorioSessaoDTO
     private String sessaoStatus;
     private String pacienteNome;
     private String fisioterapeutaNome;
+    private String usuarioExecutorNome;
     private LocalDateTime dataHoraInicio;
     private LocalDateTime dataHoraFim;
     private Integer duracaoTotalMinutos;
@@ -25,6 +26,7 @@ public class RelatorioSessaoDTO
             String sessaoStatus,
             String pacienteNome,
             String fisioterapeutaNome,
+            String usuarioExecutorNome,
             LocalDateTime dataHoraInicio,
             LocalDateTime dataHoraFim,
             Integer duracaoTotalMinutos,
@@ -36,6 +38,7 @@ public class RelatorioSessaoDTO
         this.sessaoStatus = sessaoStatus;
         this.pacienteNome = pacienteNome;
         this.fisioterapeutaNome = fisioterapeutaNome;
+        this.usuarioExecutorNome = usuarioExecutorNome;
         this.dataHoraInicio = dataHoraInicio;
         this.dataHoraFim = dataHoraFim;
         this.duracaoTotalMinutos = duracaoTotalMinutos;
@@ -81,6 +84,14 @@ public class RelatorioSessaoDTO
 
     public void setFisioterapeutaNome(String fisioterapeutaNome) {
         this.fisioterapeutaNome = fisioterapeutaNome;
+    }
+
+    public String getUsuarioExecutorNome() {
+        return usuarioExecutorNome;
+    }
+
+    public void setUsuarioExecutorNome(String usuarioExecutorNome) {
+        this.usuarioExecutorNome = usuarioExecutorNome;
     }
 
     public LocalDateTime getDataHoraInicio() {

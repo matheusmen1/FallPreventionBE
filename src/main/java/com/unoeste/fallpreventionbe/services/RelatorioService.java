@@ -10,6 +10,7 @@ import com.unoeste.fallpreventionbe.repositories.ResultadoSessaoFaseEscalaReposi
 import com.unoeste.fallpreventionbe.repositories.ResultadoSessaoFaseRepository;
 import com.unoeste.fallpreventionbe.repositories.ResultadoSessaoRepository;
 import com.unoeste.fallpreventionbe.repositories.SessaoRepository;
+import com.unoeste.fallpreventionbe.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,9 @@ public class RelatorioService
 
     @Autowired
     private ResultadoSessaoFaseEscalaRepository resultadoSessaoFaseEscalaRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Transactional
     public RelatorioSessaoDTO buscarRelatorioPorSessao(Long sesId)
@@ -79,13 +83,13 @@ public class RelatorioService
                 rsf = new ResultadoSessaoFase();
                 rsf.setId(null);
                 rsf.setSessaoFase(sf);
-                rsf.setRepeticoesRealizadas(sf.getRepeticao() != null ? sf.getRepeticao() : 0);
-                rsf.setTempoRealizado(sf.getTempo() != null ? sf.getTempo() : 0f);
+                rsf.setRepeticoesRealizadas(0);
+                rsf.setTempoRealizado(0f);
                 LocalDateTime faseInicio = resultadoSessao.getDataHoraInicio() != null
                         ? resultadoSessao.getDataHoraInicio()
                         : LocalDateTime.now();
                 rsf.setDataHoraInicio(faseInicio);
-                rsf.setDataHoraFim(faseInicio.plusMinutes(10));
+                rsf.setDataHoraFim(faseInicio);
                 rsf = resultadoSessaoFaseRepository.save(rsf);
             }
 
@@ -134,6 +138,9 @@ public class RelatorioService
 
         String pacienteNome = sessao.getPaciente() != null ? sessao.getPaciente().getNome() : "Não Informado";
         String fisioterapeutaNome = sessao.getResponsavel() != null ? sessao.getResponsavel().getNome() : "Não Informado";
+        String usuarioExecutorNome = resultadoSessao.getUsuarioExecutor() != null
+                ? resultadoSessao.getUsuarioExecutor().getNome()
+                : fisioterapeutaNome;
         String sessaoStatus = sessao.getStatus() != null ? sessao.getStatus() : "APROVADA";
 
         return new RelatorioSessaoDTO(
@@ -142,6 +149,7 @@ public class RelatorioService
                 sessaoStatus,
                 pacienteNome,
                 fisioterapeutaNome,
+                usuarioExecutorNome,
                 resultadoSessao.getDataHoraInicio(),
                 resultadoSessao.getDataHoraFim(),
                 resultadoSessao.getDuracaoTotalMinutos(),
@@ -234,8 +242,16 @@ public class RelatorioService
         sessaoRepository.save(sessao);
 
         ResultadoSessao resultadoSessao = resultadoSessaoRepository.findBySessaoId(sesId).orElse(null);
-        if (resultadoSessao != null && dto != null && dto.getObservacao() != null && !dto.getObservacao().trim().isEmpty()) {
-            resultadoSessao.setObservacao(dto.getObservacao().trim());
+        if (resultadoSessao != null && dto != null) {
+            if (dto.getObservacao() != null && !dto.getObservacao().trim().isEmpty()) {
+                resultadoSessao.setObservacao(dto.getObservacao().trim());
+            }
+            if (dto.getUsuarioId() != null) {
+                Usuario executor = usuarioRepository.findById(dto.getUsuarioId()).orElse(null);
+                if (executor != null) {
+                    resultadoSessao.setUsuarioExecutor(executor);
+                }
+            }
             resultadoSessaoRepository.save(resultadoSessao);
         }
 
