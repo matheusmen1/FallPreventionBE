@@ -81,6 +81,9 @@ public class SessaoWebSocketHandler extends TextWebSocketHandler
             case "HABILITAR_BOTAO_REINICIAR_INTERVENCAO":
                 reactWebSocketHandler.avisarReact(pacote.getAcao());
                 break;
+            case "HABILITAR_BOTAO_INICIAR":
+                reactWebSocketHandler.avisarReact(pacote.getAcao());
+                break;
         }
     }
 
