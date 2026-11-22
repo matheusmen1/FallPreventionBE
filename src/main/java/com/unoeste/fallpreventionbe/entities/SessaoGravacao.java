@@ -1,6 +1,7 @@
 package com.unoeste.fallpreventionbe.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -23,16 +24,45 @@ public class SessaoGravacao
     @JoinColumn(name = "ses_id")
     private Sessao sessao;
 
-    public SessaoGravacao(Long id, String caminho_arquivo, LocalDateTime data_hora, Sessao sessao) {
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "sesf_id")
+    private SessaoFase sessaoFase;
+
+    public SessaoGravacao(Long id, String caminho_arquivo, LocalDateTime data_hora, Sessao sessao, SessaoFase sessaoFase) {
         this.id = id;
         this.caminho_arquivo = caminho_arquivo;
         this.data_hora = data_hora;
         this.sessao = sessao;
+        this.sessaoFase = sessaoFase;
     }
 
     public SessaoGravacao()
     {
-        this(0L, "", null, null);
+        this(0L, "", null, null, null);
+    }
+
+    public SessaoFase getSessaoFase() {
+        return sessaoFase;
+    }
+
+    public void setSessaoFase(SessaoFase sessaoFase) {
+        this.sessaoFase = sessaoFase;
+    }
+
+    @JsonProperty("sessaoFaseId")
+    public Long getSessaoFaseId() {
+        return sessaoFase != null ? sessaoFase.getId() : null;
+    }
+
+    @JsonProperty("ordem")
+    public Integer getOrdem() {
+        return sessaoFase != null ? sessaoFase.getOrdem() : null;
+    }
+
+    @JsonProperty("exercicioNome")
+    public String getExercicioNome() {
+        return (sessaoFase != null && sessaoFase.getExercicio() != null) ? sessaoFase.getExercicio().getNome() : null;
     }
 
     public Long getId() {

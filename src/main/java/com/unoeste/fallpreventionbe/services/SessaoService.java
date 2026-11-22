@@ -31,6 +31,8 @@ import java.util.List;
 public class SessaoService
 {
     @Autowired
+    private ConfiguracaoService configuracaoService;
+    @Autowired
     private SessaoRepository sessaoRepository;
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -52,6 +54,10 @@ public class SessaoService
             List<Usuario> monitoresAutorizados = sessao.getSessaoMonitoresAutorizados();
             if (sessao.getId() != null)
             {
+                // as fases sao reinseridas com novos ids, entao as gravacoes antigas perdem o vinculo
+                apagarGravacoesDaSessao(sessao.getId());
+                sessaoRepository.deleteResultadoSessaoFaseEscalaBySessao(sessao.getId());
+                sessaoRepository.deleteResultadoSessaoFaseBySessao(sessao.getId());
                 sessaoRepository.deleteSessaoFase(sessao.getId());
             }
 
@@ -71,7 +77,7 @@ public class SessaoService
                 sessaoRepository.addMonitorAutorizado(usuario.getId(), sessao.getId());
 
             for (SessaoFase sessaoFase : sessaoFases)
-                sessaoRepository.addSessaoFase(sessaoFase.getOrdem(), sessaoFase.getRepeticao(), sessaoFase.getTempo(), sessaoFase.getIs_repeticao(), sessao.getId(),sessaoFase.getExercicio().getId());
+                sessaoRepository.addSessaoFase(sessaoFase.getOrdem(), sessaoFase.getRepeticao(), sessaoFase.getTempo(), sessaoFase.getIs_repeticao(), Boolean.TRUE.equals(sessaoFase.getGravar()), sessao.getId(),sessaoFase.getExercicio().getId());
             return novaSessao;
         }catch (Exception e){
             e.printStackTrace();
@@ -176,9 +182,11 @@ public class SessaoService
             {
 
                 sessaoRepository.deleteSessaoObservacaoAll(id);
-                sessaoRepository.deleteSessaoGravacaooAll(id);
+                apagarGravacoesDaSessao(id);
                 sessaoRepository.deleteResultadoSessao(id);
                 sessaoRepository.deleteAprovacaoSessao(id);
+                sessaoRepository.deleteResultadoSessaoFaseEscalaBySessao(id);
+                sessaoRepository.deleteResultadoSessaoFaseBySessao(id);
                 sessaoRepository.deleteSessaoFase(id);
                 sessaoRepository.deleteById(id);
                 return true;
@@ -226,8 +234,10 @@ public class SessaoService
     public boolean iniciarSessao(Long id)
     {
         Sessao sessao = sessaoRepository.findById(id).orElse(null);
+        Configuracao configuracao = configuracaoService.AtualizarIPv4Local();
         if (sessao != null)
         {
+
             sessao.setStatus("EM_ANDAMENTO");
             sessao.setOrdemAtual(1);
             Integer repeticao = null;
@@ -235,6 +245,10 @@ public class SessaoService
             boolean isRepeticao = true;
             Float tempo = null;
             String sexo = "";
+            String ipv4 = "";
+            if (configuracao != null)
+                ipv4 = configuracao.getIp();
+
             for (int i = 0; i < sessao.getSessaoFases().size(); i++)
             {
                 if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
@@ -246,7 +260,7 @@ public class SessaoService
                     sexo = sessao.getPaciente().getSexo();
                 }
             }
-            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"pacote_unity\": \"%s\", \"repeticao\": \"%d\", \"tempo\": \"%f\", \"is_repeticao\": \"%s\", \"sessao_id\": %d, \"sexo\": \"%s\"}", exercicio.getCodigo_nome().trim(), repeticao, tempo, isRepeticao, sessao.getId(), sexo);
+            String comandoJson = String.format("{\"acao\": \"INICIAR_FASE\", \"pacote_unity\": \"%s\", \"repeticao\": \"%d\", \"tempo\": \"%f\", \"is_repeticao\": \"%s\", \"sessao_id\": %d, \"sexo\": \"%s\", \"ipv4\": \"%s\"}", exercicio.getCodigo_nome().trim(), repeticao, tempo, isRepeticao, sessao.getId(), sexo, ipv4);
 
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
@@ -418,24 +432,68 @@ public class SessaoService
         return sessaoRepository.getAllObservacoesByPacienteAndSessao(idSessao, idPaciente);
     }
 
-    public boolean addGravacao(Long id, MultipartFile arquivoVideo)
+    // apaga o arquivo do disco e o registro de cada gravacao informada
+    private void apagarGravacoes(List<SessaoGravacao> gravacoes)
+    {
+        for (SessaoGravacao gravacao : gravacoes)
+        {
+            try {
+                Files.deleteIfExists(Paths.get(gravacao.getCaminho_arquivo()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            sessaoRepository.deleteSessaoGravacao(gravacao.getId());
+        }
+    }
+
+    private void apagarGravacoesDaSessao(Long sessaoId)
+    {
+        for (String caminho : sessaoRepository.getCaminhosGravacoesBySessao(sessaoId))
+        {
+            try {
+                Files.deleteIfExists(Paths.get(caminho));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        sessaoRepository.deleteSessaoGravacaooAll(sessaoId);
+    }
+
+    public List<SessaoGravacao> getAllGravacoesBySessao(Long idSessao)
+    {
+        return sessaoRepository.getAllGravacoesBySessao(idSessao);
+    }
+
+    public boolean addGravacao(Long id, Long sessaoFaseId, MultipartFile arquivoVideo)
     {
         try{
 
             Sessao sessao = sessaoRepository.findById(id).orElse(null);
-            if (sessao != null)
+            SessaoFase sessaoFase = null;
+            if (sessao != null && sessao.getSessaoFases() != null)
             {
+                for (SessaoFase fase : sessao.getSessaoFases())
+                    if (fase.getId().equals(sessaoFaseId))
+                        sessaoFase = fase;
+            }
+            if (sessao != null && sessaoFase != null)
+            {
+                // a nova gravacao da fase substitui a anterior
+                apagarGravacoes(sessaoRepository.getAllGravacoesBySessaoFase(sessaoFaseId));
+
                 //String nomePaciente = sessao.getPaciente().getNome().trim().replaceAll("[^a-zA-Z0-9]", "_");
                 String nomePaciente = sessao.getPaciente().getNome().replaceAll(" ", "");
-                //String pasta = "D:/Gravacoes/Paciente_"+nomePaciente+"/"+"Sessao"+id+"/"; // windows
-                String pasta = "/home/matheus/Documents/PG2/Gravacoes/Paciente_"+nomePaciente+"/"+"Sessao"+id+"/"; // linux
+                String pasta = "D:/Gravacoes/Paciente_"+nomePaciente+"/"+"Sessao"+id+"/"; // windows
+                //String pasta = "/home/matheus/Documents/PG2/Gravacoes/Paciente_"+nomePaciente+"/"+"Sessao"+id+"/"; // linux
                 File diretorio = new File(pasta);
                 if (!diretorio.exists())
                     diretorio.mkdirs();
 
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
                 String dataFormatada = LocalDateTime.now().format(formatter);
-                String nomeArquivo = "sessao_" + dataFormatada + ".webm";
+                String nomeExercicio = sessaoFase.getExercicio() != null && sessaoFase.getExercicio().getNome() != null
+                        ? sessaoFase.getExercicio().getNome().replaceAll("[^a-zA-Z0-9]", "_") : "exercicio";
+                String nomeArquivo = "fase" + sessaoFase.getOrdem() + "_" + nomeExercicio + "_" + dataFormatada + ".webm";
                 Path caminho = Paths.get(pasta + nomeArquivo);
                 Files.copy(arquivoVideo.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
 
@@ -443,7 +501,7 @@ public class SessaoService
                 gravacao.setSessao(sessao);
                 gravacao.setCaminho_arquivo(caminho.toString());
                 gravacao.setData_hora(LocalDateTime.now());
-                sessaoRepository.addGravacao(caminho.toString(), gravacao.getData_hora(), id);
+                sessaoRepository.addGravacao(caminho.toString(), gravacao.getData_hora(), id, sessaoFaseId);
                 return true;
 
             }
@@ -579,6 +637,7 @@ public class SessaoService
     {
         try {
             Sessao sessao = sessaoRepository.findById(sessaoId).orElse(null);
+            Configuracao configuracao = configuracaoService.AtualizarIPv4Local();
             if (sessao != null)
             {
                 System.out.println(sessao.getOrdemAtual());
@@ -592,6 +651,11 @@ public class SessaoService
                     boolean isRepeticao = true;
                     Long sessao_id = null;
                     String sexo = "";
+                    String ipv4 = "";
+                    if (configuracao != null)
+                    {
+                        ipv4 = configuracao.getIp();
+                    }
                     for (int i = 0; i < sessao.getSessaoFases().size(); i++)
                     {
                         if (sessao.getSessaoFases().get(i).getOrdem() == sessao.getOrdemAtual())
@@ -607,6 +671,7 @@ public class SessaoService
                     Pacote pacote = new Pacote();
                     pacote.setAcao("PROXIMA_FASE_UNITY");
                     pacote.setSessao_id(sessao_id);
+                    pacote.setIpv4(ipv4);
                     pacote.setIs_repeticao(isRepeticao);
                     pacote.setSexo(sexo);
                     pacote.setTempo(tempo);
@@ -710,6 +775,22 @@ public class SessaoService
     {
         try{
             String comandoJson = "{\"acao\": \"RECENTRALIZAR\"}";
+            if (webSocketHandler.enviarComandoParaUnity(comandoJson))
+            {
+                return true;
+            }
+            return false;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean verificar()
+    {
+        try{
+            String comandoJson = "{\"acao\": \"VERIFICAR\"}";
             if (webSocketHandler.enviarComandoParaUnity(comandoJson))
             {
                 return true;

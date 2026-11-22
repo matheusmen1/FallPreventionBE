@@ -12,8 +12,9 @@ public class Pacote
     private Long sessao_id;
     private String data_hora_inicio;
     private String data_hora_fim;
+    private String ipv4;
 
-    public Pacote(String acao, String pacote_unity, int repeticao, float tempo, boolean is_repeticao, String sexo, String mensagem, Long sessao_id, String data_hora_inicio, String data_hora_fim) {
+    public Pacote(String acao, String pacote_unity, int repeticao, float tempo, boolean is_repeticao, String sexo, String mensagem, Long sessao_id, String data_hora_inicio, String data_hora_fim, String ipv4) {
         this.acao = acao;
         this.pacote_unity = pacote_unity;
         this.repeticao = repeticao;
@@ -24,9 +25,18 @@ public class Pacote
         this.sessao_id = sessao_id;
         this.data_hora_inicio = data_hora_inicio;
         this.data_hora_fim = data_hora_fim;
+        this.ipv4 = ipv4;
     }
 
     public Pacote() {
+    }
+
+    public String getIpv4() {
+        return ipv4;
+    }
+
+    public void setIpv4(String ipv4) {
+        this.ipv4 = ipv4;
     }
 
     public String getSexo() {

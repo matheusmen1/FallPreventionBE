@@ -19,8 +19,18 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
 {
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO sessao_fase (sesf_ordem, sesf_repeticao, sesf_tempo, sesf_is_repeticao, ses_id, exe_id) VALUES (:ordem, :repeticao, :tempo, :is_repeticao, :ses_id, :exe_id)", nativeQuery = true)
-    public void addSessaoFase(@Param("ordem") Integer ordem, @Param("repeticao") Integer repeticao, @Param("tempo") Float tempo, @Param("is_repeticao") boolean is_repeticao ,@Param("ses_id") Long ses_id, @Param("exe_id") Long exe_id);
+    @Query(value = "INSERT INTO sessao_fase (sesf_ordem, sesf_repeticao, sesf_tempo, sesf_is_repeticao, sesf_gravar, ses_id, exe_id) VALUES (:ordem, :repeticao, :tempo, :is_repeticao, :gravar, :ses_id, :exe_id)", nativeQuery = true)
+    public void addSessaoFase(@Param("ordem") Integer ordem, @Param("repeticao") Integer repeticao, @Param("tempo") Float tempo, @Param("is_repeticao") boolean is_repeticao, @Param("gravar") boolean gravar, @Param("ses_id") Long ses_id, @Param("exe_id") Long exe_id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM resultado_sessao_fase_escala WHERE resf_id IN (SELECT resf_id FROM resultado_sessao_fase WHERE sesf_id IN (SELECT sesf_id FROM sessao_fase WHERE ses_id = :id))", nativeQuery = true)
+    public void deleteResultadoSessaoFaseEscalaBySessao(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM resultado_sessao_fase WHERE sesf_id IN (SELECT sesf_id FROM sessao_fase WHERE ses_id = :id)", nativeQuery = true)
+    public void deleteResultadoSessaoFaseBySessao(@Param("id") Long id);
 
     @Modifying
     @Transactional
@@ -108,8 +118,17 @@ public interface SessaoRepository extends JpaRepository<Sessao, Long>
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO sessao_gravacao (sesg_caminho_arquivo, sesg_data_hora, ses_id) VALUES (:caminho, :data_hora, :id)", nativeQuery = true)
-    void addGravacao(@Param("caminho") String caminho,@Param("data_hora") LocalDateTime dataHora,@Param("id") Long id);
+    @Query(value = "INSERT INTO sessao_gravacao (sesg_caminho_arquivo, sesg_data_hora, ses_id, sesf_id) VALUES (:caminho, :data_hora, :id, :sesf_id)", nativeQuery = true)
+    void addGravacao(@Param("caminho") String caminho,@Param("data_hora") LocalDateTime dataHora,@Param("id") Long id, @Param("sesf_id") Long sesfId);
+
+    @Query(value = "SELECT * FROM sessao_gravacao WHERE ses_id = :idSessao ORDER BY sesg_data_hora ASC", nativeQuery = true)
+    public List<SessaoGravacao> getAllGravacoesBySessao(@Param("idSessao") Long idSessao);
+
+    @Query(value = "SELECT sesg_caminho_arquivo FROM sessao_gravacao WHERE ses_id = :idSessao", nativeQuery = true)
+    public List<String> getCaminhosGravacoesBySessao(@Param("idSessao") Long idSessao);
+
+    @Query(value = "SELECT * FROM sessao_gravacao WHERE sesf_id = :sesfId", nativeQuery = true)
+    public List<SessaoGravacao> getAllGravacoesBySessaoFase(@Param("sesfId") Long sesfId);
 
     @Query(value = "SELECT sessao_gravacao.* FROM sessao_gravacao INNER JOIN sessao ON sessao.ses_id = sessao_gravacao.ses_id WHERE sessao.pac_id = :idPaciente AND sessao.ses_id = :idSessao", nativeQuery = true)
     public List<SessaoGravacao> getAllGravacoesByPacienteAndSessao(@Param("idSessao") Long idSessao,@Param("idPaciente") Long idPaciente);

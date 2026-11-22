@@ -28,8 +28,10 @@ public class SessaoFase
     private Float tempo;
     @Column(name = "sesf_is_repeticao")
     private boolean is_repeticao;
+    @Column(name = "sesf_gravar")
+    private Boolean gravar;
 
-    public SessaoFase(Long id, Sessao sessao, Exercicio exercicio, Integer ordem, Integer repeticao, Float tempo, boolean is_repeticao) {
+    public SessaoFase(Long id, Sessao sessao, Exercicio exercicio, Integer ordem, Integer repeticao, Float tempo, boolean is_repeticao, Boolean gravar) {
         this.id = id;
         this.sessao = sessao;
         this.exercicio = exercicio;
@@ -37,11 +39,20 @@ public class SessaoFase
         this.repeticao = repeticao;
         this.tempo = tempo;
         this.is_repeticao = is_repeticao;
+        this.gravar = gravar;
     }
 
     public SessaoFase()
     {
-        this(0L, null, null, 0, 0, 0f, true);
+        this(0L, null, null, 0, 0, 0f, true, false);
+    }
+
+    public Boolean getGravar() {
+        return gravar;
+    }
+
+    public void setGravar(Boolean gravar) {
+        this.gravar = gravar;
     }
 
     public Long getId() {

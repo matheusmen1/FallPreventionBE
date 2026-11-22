@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS sessao_fase(
     sesf_repeticao INTEGER,
     sesf_tempo FLOAT,
     sesf_is_repeticao BOOLEAN NOT NULL,
+    sesf_gravar BOOLEAN NOT NULL DEFAULT FALSE,
     ses_id BIGINT NOT NULL,
     exe_id BIGINT NOT NULL,
     CONSTRAINT fk_sessao_sessao_fase
@@ -92,9 +93,13 @@ CREATE TABLE IF NOT EXISTS sessao_gravacao(
     sesg_caminho_arquivo VARCHAR(255) NOT NULL,
     sesg_data_hora TIMESTAMP NOT NULL,
     ses_id BIGINT NOT NULL,
+    sesf_id BIGINT NOT NULL,
     CONSTRAINT fk_sessao_sessao_gravacao
         FOREIGN KEY (ses_id)
-            REFERENCES sessao (ses_id)
+            REFERENCES sessao (ses_id),
+    CONSTRAINT fk_sessao_fase_sessao_gravacao
+        FOREIGN KEY (sesf_id)
+            REFERENCES sessao_fase (sesf_id)
 );
 
 CREATE TABLE IF NOT EXISTS sessao_observacao(
@@ -178,4 +183,10 @@ CREATE TABLE IF NOT EXISTS sessao_monitores_autorizados(
             REFERENCES usuario (usr_id),
     CONSTRAINT uk_sessao_monitor
         UNIQUE (ses_id, usr_id)
+);
+
+CREATE TABLE IF NOT EXISTS configuracao(
+    cfg_id BIGSERIAL PRIMARY KEY,
+    cfg_ip VARCHAR(100) NOT NULL,
+    cfg_flag BOOLEAN NOT NULL
 );

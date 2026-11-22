@@ -19,6 +19,14 @@ public class SessaoRestControllers
     @Autowired
     private SessaoService sessaoService;
 
+    @GetMapping("/verificar")
+    public boolean verificar()
+    {
+        if (sessaoService.verificar())
+            return true;
+        else
+            return false;
+    }
     @PutMapping("/iniciar/{id}")
     public ResponseEntity<Object> iniciarSessao(@PathVariable Long id)
     {
@@ -202,6 +210,11 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Nenhuma Gravação Encontrada"));
     }
+    @GetMapping("/gravacoes/{idSessao}")
+    public ResponseEntity<Object> getAllGravacoesBySessao(@PathVariable("idSessao") Long idSessao)
+    {
+        return ResponseEntity.ok(sessaoService.getAllGravacoesBySessao(idSessao));
+    }
     @GetMapping("/gravacao/play/{id}")
     public ResponseEntity<Object> playGravacao(@PathVariable("id") Long id)
     {
@@ -241,10 +254,10 @@ public class SessaoRestControllers
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Gravar Observação"));
     }
-    @PostMapping("/gravacao/{id}")
-    public ResponseEntity<Object> addGravacao(@PathVariable("id") Long id, @RequestParam("video")MultipartFile arquivoVideo)
+    @PostMapping("/gravacao/{id}/{sessaoFaseId}")
+    public ResponseEntity<Object> addGravacao(@PathVariable("id") Long id, @PathVariable("sessaoFaseId") Long sessaoFaseId, @RequestParam("video")MultipartFile arquivoVideo)
     {
-        if (sessaoService.addGravacao(id, arquivoVideo))
+        if (sessaoService.addGravacao(id, sessaoFaseId, arquivoVideo))
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.badRequest().body(new Erro("Erro ao Gravar Video"));
