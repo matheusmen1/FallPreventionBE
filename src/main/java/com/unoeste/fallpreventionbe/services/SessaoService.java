@@ -54,7 +54,6 @@ public class SessaoService
             List<Usuario> monitoresAutorizados = sessao.getSessaoMonitoresAutorizados();
             if (sessao.getId() != null)
             {
-                // as fases sao reinseridas com novos ids, entao as gravacoes antigas perdem o vinculo
                 apagarGravacoesDaSessao(sessao.getId());
                 sessaoRepository.deleteResultadoSessaoFaseEscalaBySessao(sessao.getId());
                 sessaoRepository.deleteResultadoSessaoFaseBySessao(sessao.getId());
