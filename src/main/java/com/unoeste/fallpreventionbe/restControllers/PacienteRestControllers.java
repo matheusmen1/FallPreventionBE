@@ -3,6 +3,7 @@ package com.unoeste.fallpreventionbe.restControllers;
 import com.unoeste.fallpreventionbe.entities.Erro;
 import com.unoeste.fallpreventionbe.entities.Paciente;
 import com.unoeste.fallpreventionbe.services.PacienteService;
+import com.unoeste.fallpreventionbe.utils.Validacoes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +58,9 @@ public class PacienteRestControllers
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody Paciente paciente)
     {
+        Erro erroValidacao = validar(paciente);
+        if (erroValidacao != null)
+            return ResponseEntity.badRequest().body(erroValidacao);
         Paciente novoPaciente = pacienteService.save(paciente);
         if (novoPaciente != null)
             return ResponseEntity.ok().body(novoPaciente);
@@ -67,6 +71,9 @@ public class PacienteRestControllers
     @PutMapping
     public ResponseEntity<Object> update(@RequestBody Paciente paciente)
     {
+        Erro erroValidacao = validar(paciente);
+        if (erroValidacao != null)
+            return ResponseEntity.badRequest().body(erroValidacao);
         Paciente novoPaciente = pacienteService.save(paciente);
         if (novoPaciente != null)
             return ResponseEntity.ok().body(novoPaciente);
@@ -83,4 +90,12 @@ public class PacienteRestControllers
             return ResponseEntity.badRequest().body(new Erro("Erro ao Deletar Paciente"));
     }
 
+    private Erro validar(Paciente paciente)
+    {
+        if (!Validacoes.cpfValido(paciente.getCpf()))
+            return new Erro("CPF Inválido");
+        if (!Validacoes.dataNascimentoValida(paciente.getData_nascimento()))
+            return new Erro("A Data de Nascimento Não Pode Ser Posterior à Data Atual");
+        return null;
+    }
 }

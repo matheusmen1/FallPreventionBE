@@ -3,6 +3,7 @@ package com.unoeste.fallpreventionbe.restControllers;
 import com.unoeste.fallpreventionbe.entities.Erro;
 import com.unoeste.fallpreventionbe.entities.Usuario;
 import com.unoeste.fallpreventionbe.services.UsuarioService;
+import com.unoeste.fallpreventionbe.utils.Validacoes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,6 +67,8 @@ public class UsuarioRestControllers
     @PostMapping
     public ResponseEntity<Object> addUsuario(@RequestBody Usuario usuario)
     {
+        if (!Validacoes.cpfValido(usuario.getCpf()))
+            return ResponseEntity.badRequest().body(new Erro("CPF Inválido"));
         Usuario novoUsuario = usuarioService.save(usuario);
         if (novoUsuario != null)
             return ResponseEntity.ok().body(novoUsuario);
@@ -84,6 +87,8 @@ public class UsuarioRestControllers
     @PutMapping
     public ResponseEntity<Object> updateUsuario(@RequestBody Usuario usuario)
     {
+        if (!Validacoes.cpfValido(usuario.getCpf()))
+            return ResponseEntity.badRequest().body(new Erro("CPF Inválido"));
         Usuario novoUsuario = usuarioService.save(usuario);
         if (novoUsuario != null)
             return ResponseEntity.ok(novoUsuario);

@@ -2,6 +2,7 @@ package com.unoeste.fallpreventionbe.restControllers;
 
 import com.unoeste.fallpreventionbe.entities.*;
 import com.unoeste.fallpreventionbe.services.SessaoService;
+import com.unoeste.fallpreventionbe.utils.Validacoes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -230,6 +231,8 @@ public class SessaoRestControllers
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody Sessao sessao)
     {
+        if (!Validacoes.dataHoraSessaoValida(sessao.getData_hora()))
+            return ResponseEntity.badRequest().body(new Erro("A Data e Hora da Sessão Não Podem Estar no Passado"));
         Sessao novaSessao = sessaoService.save(sessao);
         if (novaSessao != null)
             return ResponseEntity.ok().body(novaSessao);

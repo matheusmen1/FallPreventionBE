@@ -482,8 +482,8 @@ public class SessaoService
 
                 //String nomePaciente = sessao.getPaciente().getNome().trim().replaceAll("[^a-zA-Z0-9]", "_");
                 String nomePaciente = sessao.getPaciente().getNome().replaceAll(" ", "");
-                String pasta = "D:/Gravacoes/Paciente_"+nomePaciente+"/"+"Sessao"+id+"/"; // windows
-                //String pasta = "/home/matheus/Documents/PG2/Gravacoes/Paciente_"+nomePaciente+"/"+"Sessao"+id+"/"; // linux
+                //String pasta = "D:/Gravacoes/Paciente_"+nomePaciente+"/"+"Sessao"+id+"/"; // windows
+                String pasta = "/home/matheus/Documents/PG2/Gravacoes/Paciente_"+nomePaciente+"/"+"Sessao"+id+"/"; // linux
                 File diretorio = new File(pasta);
                 if (!diretorio.exists())
                     diretorio.mkdirs();
